@@ -1,0 +1,22 @@
+{
+    "name": "kristiannissen/quickpay",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kristian Nissen",
+            "email": "kristian.nissen@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "QuickPay\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "QuickPay\\Tests\\": "tests/"
+        }
+    }
+}
