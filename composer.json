@@ -7,7 +7,12 @@
             "email": "kristian.nissen@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "php": "^7.3",
+        "moneyphp/money": "^3.3",
+        "illuminate/http": "^7.19",
+        "illuminate/contracts": "^7.19"
+    },
     "autoload": {
         "psr-4": {
             "QuickPay\\": "src/"
