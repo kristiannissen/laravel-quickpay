@@ -3,5 +3,5 @@
 namespace QuickPay;
 
 class QuickPay {
-    public __construct() {}    
+    public function _construct() {}    
 }

@@ -18,5 +18,7 @@
         "psr-4": {
             "QuickPay\\Tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

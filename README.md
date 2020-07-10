@@ -1,1 +1,3 @@
-##QuickPay for Laravel
+### QuickPay pakke til Laravel
+
+
