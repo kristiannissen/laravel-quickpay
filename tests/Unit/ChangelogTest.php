@@ -2,10 +2,10 @@
 
 use QuickPay\Changelog\Changelog;
 
-beforeEach(function() {
-    $this->changelog = Changelog::get();
+beforeEach(function () {
+    $this->changelog = new Changelog();
 });
 
 it('returns a changelog', function () {
-    assertArrayHasKey('changes', $this->changelog);
+    assertObjectHasAttribute('changes', $this->changelog);
 });

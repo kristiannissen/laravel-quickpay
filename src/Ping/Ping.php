@@ -8,8 +8,9 @@ namespace QuickPay\Ping;
 
 use GuzzleHttp\Client;
 use QuickPay\Ping\Pong;
+use QuickPay\QuickPayHttpClient;
 
-class Ping
+class Ping extends QuickPayHttpClient
 {
     /**
      * Send ping request to https://api.quickpay.net/ping
@@ -29,5 +30,13 @@ class Ping
             return new Pong((array) json_decode($body->getContents()));
         }
         return new Pong();
+    }
+
+    /**
+     *
+     */
+    public function getUri(): string
+    {
+        return 'ping';
     }
 }

@@ -2,10 +2,8 @@
 
 use QuickPay\Account\Account;
 
-beforeEach(function() {
+beforeEach(function () {
     // $this->account = Account::get();
 });
 
-it('', function() {
-    
-});
+it('', function () {});

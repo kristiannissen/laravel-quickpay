@@ -7,11 +7,12 @@ namespace QuickPay\Account;
 
 use GuzzleHttp\Client;
 
-class Account {
+class Account
+{
     protected $attributes = [];
 
-    public function __construct(array $attributes = []) {
-    
+    public function __construct(array $attributes = [])
+    {
     }
 
     /**
@@ -19,14 +20,15 @@ class Account {
      *
      * @return object Account
      */
-    public static function get() : Account {
+    public static function get(): Account
+    {
         $client = new Client([
             'base_uri' => 'https://api.quickpay.net',
         ]);
         $response = $client->request('GET', 'account', [
             'headers' => [
                 'Accept-Version' => 'v10',
-                'Accept' => 'application/json'
+                'Accept' => 'application/json',
             ],
             'auth' => [],
         ]);

@@ -6,24 +6,22 @@
 namespace QuickPay\Changelog;
 
 use GuzzleHttp\Client;
+use QuickPay\QuickPayHttpClient;
 
-class Changelog {
-    public function __construct() {
+class Changelog extends QuickPayHttpClient
+{
+    public $attributes = [
+        'changes' => '',
+    ];
+    public function __construct(array $attributes = [])
+    {
     }
 
     /**
      *
      */
-    public static function get() : array {
-        $client = new Client([
-            'base_uri' => 'https://api.quickpay.net',
-        ]);
-        $response = $client->request('GET', 'changelog', [
-            'headers' => [
-                'Accept-Version' => 'v10',
-            ]
-        ]);
-        $body = $response->getBody();
-        return (array) json_decode($body->getContents());
+    public function getUri(): string
+    {
+        return 'changelog';
     }
 }
