@@ -2,14 +2,12 @@
 
 use \Mockery as m;
 
-beforeEach(function() {
-    
-});
+beforeEach(function () {});
 
-afterEach(function() {
+afterEach(function () {
     m::close();
 });
 
-test('assert true is true', function() {
+test('assert true is true', function () {
     assertTrue(true);
 });

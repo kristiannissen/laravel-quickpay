@@ -2,6 +2,9 @@
 
 namespace QuickPay;
 
-class QuickPay {
-    public function _construct() {}    
+class QuickPay
+{
+    public function _construct()
+    {
+    }
 }
