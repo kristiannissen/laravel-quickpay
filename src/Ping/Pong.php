@@ -17,7 +17,6 @@ class Pong implements Jsonable, Arrayable
         'msg' => '',
         'scope' => '',
         'version' => '',
-        'params' => [],
     ];
     public function __construct(array $attributes = [])
     {
@@ -67,7 +66,9 @@ class Pong implements Jsonable, Arrayable
     public function fill(array $attributes): void
     {
         foreach ($attributes as $key => $value) {
-            $this->setAttribute($key, $value);
+            if (array_key_exists($key, $this->attributes)) {
+                $this->setAttribute($key, $value);
+            }
         }
     }
 
