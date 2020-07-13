@@ -5,23 +5,8 @@
  */
 namespace QuickPay\Changelog;
 
-use GuzzleHttp\Client;
-use QuickPay\QuickPayHttpClient;
+use QuickPay\Model as Model;
 
-class Changelog extends QuickPayHttpClient
+class Changelog extends Model
 {
-    public $attributes = [
-        'changes' => '',
-    ];
-    public function __construct(array $attributes = [])
-    {
-    }
-
-    /**
-     *
-     */
-    public function getUri(): string
-    {
-        return 'changelog';
-    }
 }
