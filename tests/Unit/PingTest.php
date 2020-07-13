@@ -1,18 +1,13 @@
 <?php
 
-use QuickPay\Ping\Ping;
+use QuickPay\Repository\PingRepository;
 
-beforeEach(function () {
-    $this->ping = Ping::send();
+test('ping returns pong object', function () {
+    $ping = new PingRepository();
+		$pong = $ping->get();
+
+		assertEquals(
+			'Pong from QuickPay API V10, scope is anonymous',
+			$pong->msg
+		);
 });
-
-test('ping returns pong json', function () {
-    assertJsonStringEqualsJsonString(
-        json_encode([
-            'msg' => 'Pong from QuickPay API V10, scope is anonymous',
-            'scope' => 'anonymous',
-            'version' => 'v10',
-        ]),
-        $this->ping->toJson()
-    );
-})->skip();
