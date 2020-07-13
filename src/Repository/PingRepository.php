@@ -9,15 +9,17 @@ use QuickPay\Ping\Pong;
 use QuickPay\Repository\PingRepositoryInterface;
 use GuzzleHttp\Client;
 
-class PingRepository implements PingRepositoryInterface {
-    public function get() : ?QuickPayModel {
+class PingRepository implements PingRepositoryInterface
+{
+    public function get(): ?QuickPayModel
+    {
         $client = new Client([
-            'base_uri' => 'https://api.quickpay.net'
+            'base_uri' => 'https://api.quickpay.net',
         ]);
         $response = $client->request('GET', 'ping', [
             'headers' => [
-                'Accept-Version' => 'v10'
-            ]
+                'Accept-Version' => 'v10',
+            ],
         ]);
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
@@ -26,7 +28,8 @@ class PingRepository implements PingRepositoryInterface {
         return null;
     }
 
-    public function post() : ?QuickPayModel {
+    public function post(): ?QuickPayModel
+    {
         return new \Exception('Method not implemented');
     }
 }
