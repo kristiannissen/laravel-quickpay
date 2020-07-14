@@ -5,8 +5,8 @@
  */
 namespace QuickPay\Changelog;
 
-use QuickPay\Model as Model;
+use QuickPay\QuickPayModel;
 
-class Changelog extends Model
+class Changelog extends QuickPayModel
 {
 }

@@ -11,6 +11,8 @@ abstract class QuickPayModel implements Jsonable, Arrayable
 {
     protected $attributes = [];
 
+    protected $fillable = [];
+
     public function __construct(array $attributes = [])
     {
         $this->fill($attributes);
@@ -26,7 +28,7 @@ abstract class QuickPayModel implements Jsonable, Arrayable
      */
     public function toJson($options = 0)
     {
-        $json = json_encode($this->attributes, $options);
+        $json = json_encode($this->getAttributes(), $options);
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new \Exception(json_last_error_msg());
         }
@@ -53,15 +55,36 @@ abstract class QuickPayModel implements Jsonable, Arrayable
 
     /**
      * @param array $attributes
-     * @return $this
-     * TODO: Make specific exception
+     * @return
      * @throws \Exception
      */
     public function fill(array $attributes): void
     {
         foreach ($attributes as $key => $value) {
-            $this->setAttribute($key, $value);
+            if ($this->isFillable($key)) {
+                $this->setAttribute($key, $value);
+            } else {
+                throw new \Exception(
+                    sprintf(
+                        'Add [%s] to fillable allow mass assignment on [%s].',
+                        $key,
+                        get_class($this)
+                    )
+                );
+            }
         }
+    }
+
+    public function isFillable(string $key): bool
+    {
+        return in_array($key, $this->getFillable());
+    }
+
+    /**
+     */
+    public function getFillable()
+    {
+        return $this->fillable;
     }
 
     /**
@@ -77,7 +100,20 @@ abstract class QuickPayModel implements Jsonable, Arrayable
      */
     public function getAttribute($key)
     {
-        return $this->attributes[$key];
+        if (array_key_exists($key, $this->getAttributes())) {
+            return $this->attributes[$key];
+        }
+        throw new \Exception(
+            sprintf('[%s] is not a property of [%s]', $key, get_class($this))
+        );
+    }
+
+    /**
+     *
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
     }
 
     /**

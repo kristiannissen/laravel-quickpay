@@ -6,17 +6,14 @@ namespace QuickPay\Repository;
 
 use QuickPay\QuickPayModel;
 use QuickPay\Ping\Pong;
-use QuickPay\Repository\PingRepositoryInterface;
-use GuzzleHttp\Client;
+use QuickPay\Repository\RepositoryInterface;
+use QuickPay\QuickPayHttpClient;
 
-class PingRepository implements PingRepositoryInterface
+class PingRepository extends QuickPayHttpClient implements RepositoryInterface
 {
     public function get(): ?QuickPayModel
     {
-        $client = new Client([
-            'base_uri' => 'https://api.quickpay.net',
-        ]);
-        $response = $client->request('GET', 'ping', [
+        $response = $this->client->request('GET', 'ping', [
             'headers' => [
                 'Accept-Version' => 'v10',
             ],
@@ -28,8 +25,13 @@ class PingRepository implements PingRepositoryInterface
         return null;
     }
 
-    public function post(): ?QuickPayModel
+    public function getByKey($key = null): ?QuickPayModel
     {
-        return new \Exception('Method not implemented');
+        throw new \Exception('Method not implemented');
+    }
+
+    public function put(QuickPayModel $model): ?QuickPayModel
+    {
+        throw new \Exception('Method not implemented');
     }
 }

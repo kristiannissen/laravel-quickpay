@@ -1,10 +1,10 @@
 <?php
 
-namespace QuickPay\Repository;
+namespace QuickPay\Ping\Contracts;
 
 use QuickPay\QuickPayModel;
 
-interface AccountRepositoryInterface
+interface PingRepository
 {
     public function get(): ?QuickPayModel;
 }
