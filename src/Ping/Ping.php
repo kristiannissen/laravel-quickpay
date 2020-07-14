@@ -16,7 +16,6 @@ class Ping extends QuickPayHttpClient implements PingRepository
                 'Accept-Version' => 'v10',
                 'Accept' => 'application/json',
             ],
-            'debug' => true,
         ]);
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
