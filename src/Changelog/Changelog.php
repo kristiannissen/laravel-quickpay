@@ -12,11 +12,12 @@ use QuickPay\Changelog\Changes;
 
 class Changelog extends QuickPayHttpClient implements ChangelogInterface
 {
-    public function get() : ?QuickPayModel {
+    public function get(): ?QuickPayModel
+    {
         $response = $this->client->request('GET', 'changelog', [
             'headers' => [
                 'Accept-Version' => 'v10',
-                'Accept' => 'application/json'
+                'Accept' => 'application/json',
             ],
             'auth' => [],
         ]);
@@ -24,9 +25,11 @@ class Changelog extends QuickPayHttpClient implements ChangelogInterface
             $body = $response->getBody();
             return new Changes((array) json_decode($body));
         }
-        throw new \Exception(sprintf(
-            'Call to changelog returned [%d]',
-            $response->getStatusCode()
-        ));
+        throw new \Exception(
+            sprintf(
+                'Call to changelog returned [%d]',
+                $response->getStatusCode()
+            )
+        );
     }
 }
