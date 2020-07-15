@@ -6,6 +6,7 @@ use QuickPay\Ping\Contracts\PingRepository;
 use QuickPay\Ping\Pong;
 use QuickPay\QuickPayHttpClient;
 use QuickPay\QuickPayModel;
+use Illuminate\Support\Env;
 
 class Ping extends QuickPayHttpClient implements PingRepository
 {

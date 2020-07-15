@@ -9,6 +9,7 @@ use QuickPay\Changelog\Contracts\ChangelogInterface;
 use QuickPay\QuickPayModel;
 use QuickPay\QuickPayHttpClient;
 use QuickPay\Changelog\Changes;
+use Illuminate\Support\Env;
 
 class Changelog extends QuickPayHttpClient implements ChangelogInterface
 {
@@ -19,7 +20,7 @@ class Changelog extends QuickPayHttpClient implements ChangelogInterface
                 'Accept-Version' => 'v10',
                 'Accept' => 'application/json',
             ],
-            'auth' => [],
+            'auth' => [Env::get('QUICKPAY_USER'), Env::get('QUICKPAY_PWD')],
         ]);
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
