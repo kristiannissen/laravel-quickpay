@@ -4,26 +4,19 @@ namespace QuickPay\Ping;
 
 use QuickPay\Ping\Contracts\PingRepository;
 use QuickPay\Ping\Pong;
-use QuickPay\QuickPayHttpClient;
+use Illuminate\Support\Facades\Http;
 use QuickPay\QuickPayModel;
 use Illuminate\Support\Env;
 
-class Ping extends QuickPayHttpClient implements PingRepository
+class Ping
 {
-    public function get(): ?QuickPayModel
+    public function get()
     {
-        $response = $this->client->request('GET', 'ping', [
-            'headers' => [
-                'Accept-Version' => 'v10',
-                'Accept' => 'application/json',
-            ],
-        ]);
-        if ($response->getStatusCode() == 200) {
-            $body = $response->getBody();
-            return new Pong((array) json_decode($body->getContents()));
-        }
-        throw new \Exception(
-            sprintf('Call to Ping returned [%d]', $response->getStatusCode())
-        );
+        dd(config('quickpay'));
+        $response = Http::withHeaders([
+            'Accept-Version' => 'v10',
+            'Accept' => 'application/json',
+        ])->get('https://api.quickpay.net/ping');
+        return $response->body();
     }
 }

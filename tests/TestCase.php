@@ -3,9 +3,12 @@
 namespace QuickPay\Tests;
 
 use QuickPay\QuickPayServiceProvider;
+use Illuminate\Contracts\Console\Kernel;
 
 class TestCase extends \Orchestra\Testbench\TestCase {
-    public function setup(): void {
+    // use CreatesApplication;
+
+		public function setup(): void {
         parent::setup();
     }
 
