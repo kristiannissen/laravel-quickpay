@@ -13,7 +13,9 @@ class PingTest extends TestCase {
         $this->ping = new Ping();
     }
     public function test_ping_returns_model() {
-        $this->ping->get();
-        $this->assertTrue(true);
+        $this->assertEquals(
+            'Pong from QuickPay API V10, scope is anonymous',
+            $this->ping->get()->msg
+        );
     }
 }

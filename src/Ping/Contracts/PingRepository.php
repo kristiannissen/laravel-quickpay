@@ -2,9 +2,9 @@
 
 namespace QuickPay\Ping\Contracts;
 
-use QuickPay\QuickPayModel;
+use Illuminate\Database\Eloquent\Model;
 
 interface PingRepository
 {
-    public function get(): ?QuickPayModel;
+    public function get();
 }
