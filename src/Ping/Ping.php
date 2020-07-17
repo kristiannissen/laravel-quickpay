@@ -21,9 +21,8 @@ class Ping implements PingRepository
             unset($json->params);
             return new Message((array) $json);
         }
-        throw new \Exception(sprintf(
-            'Call to ping returned [%s]',
-            $response->status()
-        ));
+        throw new \Exception(
+            sprintf('Call to ping returned [%s]', $response->status())
+        );
     }
 }

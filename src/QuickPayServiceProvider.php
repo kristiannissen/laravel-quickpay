@@ -4,6 +4,7 @@ namespace QuickPay;
 
 use Illuminate\Support\ServiceProvider;
 use QuickPay\Facades\Ping;
+use QuickPay\Facades\Changelog;
 
 class QuickPayServiceProvider extends ServiceProvider
 {
@@ -11,6 +12,9 @@ class QuickPayServiceProvider extends ServiceProvider
     {
         $this->app->bind('ping', function ($app) {
             return new Ping();
+        });
+        $this->app->bind('changelog', function ($app) {
+            return new Changelog();
         });
     }
 
@@ -21,12 +25,13 @@ class QuickPayServiceProvider extends ServiceProvider
         ]);
     }
 
-    private function loadConfig() {
-        return join(DIRECTORY_SEPARATOR, array(
+    private function loadConfig()
+    {
+        return join(DIRECTORY_SEPARATOR, [
             __DIR__,
             '..',
             'config',
-            'config.php'
-        ));
+            'config.php',
+        ]);
     }
 }

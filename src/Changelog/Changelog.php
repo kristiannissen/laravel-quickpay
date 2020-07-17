@@ -6,31 +6,34 @@
 namespace QuickPay\Changelog;
 
 use QuickPay\Changelog\Contracts\ChangelogInterface;
-use QuickPay\QuickPayModel;
-use QuickPay\QuickPayHttpClient;
+use GuzzleHttp\Client;
 use QuickPay\Changelog\Changes;
-use Illuminate\Support\Env;
 
-class Changelog extends QuickPayHttpClient implements ChangelogInterface
+class Changelog implements ChangelogInterface
 {
-    public function get(): ?QuickPayModel
+    public function get()
     {
-        $response = $this->client->request('GET', 'changelog', [
+        $client = new Client([
+            'base_uri' => 'https://api.quickpay.net',
+        ]);
+        $response = $client->get('changelog', [
+            'auth' => [
+                '',
+                '',
+            ],
             'headers' => [
                 'Accept-Version' => 'v10',
                 'Accept' => 'application/json',
-            ],
-            'auth' => [Env::get('QUICKPAY_USER'), Env::get('QUICKPAY_PWD')],
+            ]
         ]);
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
-            return new Changes((array) json_decode($body));
+            return new Changes((array) json_decode($body->getContents()));
         }
-        throw new \Exception(
-            sprintf(
-                'Call to changelog returned [%d]',
-                $response->getStatusCode()
-            )
-        );
+        throw new \Exception(sprintf(
+            '[%s] returned status code [%s]',
+            get_class($this),
+            $response->getStatusCode()
+        ));
     }
 }

@@ -2,9 +2,9 @@
 
 namespace QuickPay\Changelog;
 
-use QuickPay\QuickPayModel;
+use Illuminate\Database\Eloquent\Model;
 
-class Changes extends QuickPayModel
+class Changes extends Model
 {
     protected $fillable = ['changes'];
 }
