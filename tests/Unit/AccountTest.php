@@ -13,8 +13,17 @@ class AccountTest extends TestCase
         parent::setup();
         $this->account = new AccountService();
     }
-    public function test_get_returns_model()
+
+    public function test_get_returns_shop_name()
     {
         $this->assertEquals($this->account->get()->shop_name, 'Demo Shop');
+    }
+
+    public function test_merchant_customer_address()
+    {
+        $this->assertEquals(
+            $this->account->get()->customerAdress->name,
+            'Demo Shop'
+        );
     }
 }

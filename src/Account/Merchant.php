@@ -37,4 +37,9 @@ class Merchant extends Model
         'suspended_at',
         'logging_stops_at',
     ];
+
+    public function customerAddress()
+    {
+        return $this->hasOne('QuickPay\Account\CustomerAddress');
+    }
 }
