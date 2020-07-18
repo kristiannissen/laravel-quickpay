@@ -16,13 +16,13 @@ class QuickPayServiceProvider extends ServiceProvider
         $this->app->bind('changelog', function ($app) {
             return new Changelog();
         });
-        $this->mergeConfigFrom(__DIR__ .'/../config/quikcpay.php', 'quickpay');
+        $this->mergeConfigFrom($this->loadConfig(), 'quickpay');
     }
 
     public function boot()
     {
         $this->publishes([
-            __DIR__ .'/../quickpay.php' => config_path('quickpay.php')
+            $this->loadConfig() => config_path('quickpay.php')
         ], 'quickpay-config');
     }
 

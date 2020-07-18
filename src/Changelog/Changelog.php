@@ -19,10 +19,10 @@ class Changelog implements ChangelogInterface
         $response = $client->get('changelog', [
             'auth' => [
                 '',
-                '',
+                config('quickpay.api_key'),
             ],
             'headers' => [
-                'Accept-Version' => 'v10',
+                'Accept-Version' => config('quickpay.version'),
                 'Accept' => 'application/json',
             ]
         ]);
