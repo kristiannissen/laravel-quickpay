@@ -11,6 +11,11 @@ use QuickPay\Changelog\Changes;
 
 class Changelog implements ChangelogInterface
 {
+    /**
+     * Sends a GET request to the ping endpoint
+     *
+     * @return object $model
+     */
     public function get()
     {
         $client = new Client([
