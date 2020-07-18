@@ -22,23 +22,22 @@ class Changelog implements ChangelogInterface
             'base_uri' => 'https://api.quickpay.net',
         ]);
         $response = $client->get('changelog', [
-            'auth' => [
-                '',
-                config('quickpay.api_key'),
-            ],
+            'auth' => ['', config('quickpay.api_key')],
             'headers' => [
                 'Accept-Version' => config('quickpay.version'),
                 'Accept' => 'application/json',
-            ]
+            ],
         ]);
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
             return new Changes((array) json_decode($body->getContents()));
         }
-        throw new \Exception(sprintf(
-            '[%s] returned status code [%s]',
-            get_class($this),
-            $response->getStatusCode()
-        ));
+        throw new \Exception(
+            sprintf(
+                '[%s] returned status code [%s]',
+                get_class($this),
+                $response->getStatusCode()
+            )
+        );
     }
 }

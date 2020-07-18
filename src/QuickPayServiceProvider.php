@@ -21,9 +21,12 @@ class QuickPayServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->publishes([
-            $this->loadConfig() => config_path('quickpay.php')
-        ], 'quickpay-config');
+        $this->publishes(
+            [
+                $this->loadConfig() => config_path('quickpay.php'),
+            ],
+            'quickpay-config'
+        );
     }
 
     private function loadConfig()

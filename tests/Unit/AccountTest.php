@@ -15,9 +15,6 @@ class AccountTest extends TestCase
     }
     public function test_get_returns_model()
     {
-        $this->assertEquals(
-            $this->account->get()->shop_name
-            , 'Demo Shop'
-        );
+        $this->assertEquals($this->account->get()->shop_name, 'Demo Shop');
     }
 }
