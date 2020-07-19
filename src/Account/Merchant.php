@@ -31,8 +31,15 @@ class Merchant extends Model
         'autofee',
     ];
 
+    protected $append = ['address_type'];
+
     public function customer_address()
     {
-        return $this->hasOne('QuickPay\Account\CustomerAddress');
+        return $this->hasOne('QuickPay\Account\Address');
+    }
+
+    public function delivery_address()
+    {
+        return $this->hasOne('QuickPay\Account\Address');
     }
 }

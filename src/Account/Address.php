@@ -7,7 +7,7 @@ namespace QuickPay\Account;
 use Illuminate\Database\Eloquent\Model;
 use QuickPay\Concerns\Filterable;
 
-class CustomerAddress extends Model
+class Address extends Model
 {
     use Filterable;
 
@@ -21,6 +21,8 @@ class CustomerAddress extends Model
         'country_code',
         'vat_no',
     ];
+
+    protected $append = ['address_type'];
 
     public function merchant()
     {

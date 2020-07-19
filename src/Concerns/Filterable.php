@@ -25,4 +25,9 @@ trait Filterable
     {
         return $this->fillable;
     }
+
+    public function toQueryString()
+    {
+        return http_build_query($this->attributesToArray());
+    }
 }

@@ -24,9 +24,19 @@ class AccountTest extends TestCase
 
     public function test_merchant_customer_address()
     {
-        $this->assertEquals(
-            $this->merchant->customer_address->name,
-            'Demo Company'
-        );
+        $this->assertEquals($this->merchant->address->name, 'Demo Company');
+    }
+
+    public function test_patch_updates_merchant()
+    {
+        $merchant = $this->merchant;
+        $account = new AccountService();
+        $account->patch($merchant);
+        $this->assertEquals(1, 1);
+    }
+
+    public function test_merchant_has_acquirers()
+    {
+        $this->assertTrue(count($this->merchant->acquirer_settings) > 0);
     }
 }

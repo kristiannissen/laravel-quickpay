@@ -8,7 +8,8 @@ namespace QuickPay\Account;
 use QuickPay\Account\Contracts\AccountRepository;
 use GuzzleHttp\Client;
 use QuickPay\Account\Merchant;
-use QuickPay\Account\CustomerAddress;
+use QuickPay\Account\Address;
+use Illuminate\Database\Eloquent\Model;
 
 class AccountService implements AccountRepository
 {
@@ -43,14 +44,30 @@ class AccountService implements AccountRepository
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
             $json_array = (array) json_decode($body->getContents());
+            // dd($json_array);
 
             $merchant = new Merchant();
             $merchant->fill(
                 $merchant->filterJson($merchant->getFillable(), $json_array)
             );
-            $merchant->customer_address = new CustomerAddress(
-                (array) $json_array['customer_address']
+            $merchant->address = new Address(
+                array_merge(
+                    ['address_type' => 'customer_address'],
+                    (array) $json_array['customer_address']
+                )
             );
+            $acquirer_setting = new AcquirerSetting();
+            $acquirer_settings_array = (array) $json_array['acquirer_settings'];
+            // $acquirer_names = array_keys($acquirer_array);
+
+            foreach ($acquirer_settings_array as $key => $obj) {
+                $acquirer_setting->acquirer = new Acquirer([
+                    'name' => $key,
+                    'active' => $obj->active,
+                ]);
+            }
+
+            $merchant->acquirer_setting = $acquirer_setting;
 
             return $merchant;
         }
@@ -63,8 +80,17 @@ class AccountService implements AccountRepository
         );
     }
 
-    public function patch()
+    public function patch(Model $model)
     {
+        $data = array_merge(
+            [
+                'json' => $model->toJson(),
+                'debug' => true,
+            ],
+            $this->buildHeaders()
+        );
+
+        // $response = $this->client->patch('account', $data);
     }
 
     public function delete()
