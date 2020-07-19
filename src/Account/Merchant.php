@@ -6,9 +6,12 @@
 namespace QuickPay\Account;
 
 use Illuminate\Database\Eloquent\Model;
+use QuickPay\Concerns\Filterable;
 
 class Merchant extends Model
 {
+    use Filterable;
+
     protected $fillable = [
         'id',
         'type',
@@ -26,16 +29,6 @@ class Merchant extends Model
         'default_text_on_statement',
         'allow_test_transactions',
         'autofee',
-        'default_branding_config',
-        'customer_address',
-        'billing_address',
-        'acquirer_settings',
-        'integration_settings',
-        'pci',
-        'reseller',
-        'created_at',
-        'suspended_at',
-        'logging_stops_at',
     ];
 
     public function customerAddress()

@@ -5,9 +5,12 @@
 namespace QuickPay\Account;
 
 use Illuminate\Database\Eloquent\Model;
+use QuickPay\Concerns\Filterable;
 
 class CustomerAddress extends Model
 {
+    use Filterable;
+
     protected $fillable = [
         'name',
         'att',

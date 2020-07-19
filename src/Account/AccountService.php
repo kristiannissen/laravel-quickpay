@@ -8,6 +8,7 @@ namespace QuickPay\Account;
 use QuickPay\Account\Contracts\AccountRepository;
 use GuzzleHttp\Client;
 use QuickPay\Account\Merchant;
+use QuickPay\Account\CustomerAddress;
 
 class AccountService implements AccountRepository
 {
@@ -41,7 +42,17 @@ class AccountService implements AccountRepository
         $response = $this->client->get('account', $this->buildHeaders());
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
-            return new Merchant((array) json_decode($body->getContents()));
+            $json_array = (array) json_decode($body->getContents());
+            $customer_address = new CustomerAddress(
+                (array) $json_array['customer_address']
+            );
+            $merchant = new Merchant();
+            $merchant->fill(
+                $merchant->filterJson($merchant->getFillable(), $json_array)
+            );
+            $merchant->customerAddress($customer_address);
+
+            return $merchant;
         }
         throw new \Exception(
             sprintf(
