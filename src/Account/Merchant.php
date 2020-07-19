@@ -31,7 +31,7 @@ class Merchant extends Model
         'autofee',
     ];
 
-    public function customerAddress()
+    public function customer_address()
     {
         return $this->hasOne('QuickPay\Account\CustomerAddress');
     }

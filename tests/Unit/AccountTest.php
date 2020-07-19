@@ -24,6 +24,9 @@ class AccountTest extends TestCase
 
     public function test_merchant_customer_address()
     {
-        $this->assertEquals($this->merchant->customerAdress->name, 'Demo Shop');
+        $this->assertEquals(
+            $this->merchant->customer_address->name,
+            'Demo Company'
+        );
     }
 }

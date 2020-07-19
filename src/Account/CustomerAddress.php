@@ -24,6 +24,6 @@ class CustomerAddress extends Model
 
     public function merchant()
     {
-        $this->belongsTo('QuickPay\Account\Merchant');
+        $this->belongsTo('QuickPay\Account\Merchant')->withDefault();
     }
 }

@@ -43,14 +43,14 @@ class AccountService implements AccountRepository
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
             $json_array = (array) json_decode($body->getContents());
-            $customer_address = new CustomerAddress(
-                (array) $json_array['customer_address']
-            );
+
             $merchant = new Merchant();
             $merchant->fill(
                 $merchant->filterJson($merchant->getFillable(), $json_array)
             );
-            $merchant->customerAddress($customer_address);
+            $merchant->customer_address = new CustomerAddress(
+                (array) $json_array['customer_address']
+            );
 
             return $merchant;
         }
@@ -69,5 +69,6 @@ class AccountService implements AccountRepository
 
     public function delete()
     {
+        throw new \Exception('This method is not implemented');
     }
 }
