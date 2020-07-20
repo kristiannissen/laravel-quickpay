@@ -10,6 +10,8 @@ use GuzzleHttp\Client;
 use QuickPay\Account\Merchant;
 use QuickPay\Account\Address;
 use Illuminate\Database\Eloquent\Model;
+use QuickPay\Account\Acquirer;
+use QuickPay\Account\AcquirerSetting;
 
 class AccountService implements AccountRepository
 {
@@ -43,8 +45,8 @@ class AccountService implements AccountRepository
         $response = $this->client->get('account', $this->buildHeaders());
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
-            $json_array = (array) json_decode($body->getContents());
-            // dd($json_array);
+            $json_object = json_decode($body->getContents());
+            $json_array = (array) $json_object;
 
             $merchant = new Merchant();
             $merchant->fill(
@@ -56,19 +58,6 @@ class AccountService implements AccountRepository
                     (array) $json_array['customer_address']
                 )
             );
-            $acquirer_setting = new AcquirerSetting();
-            $acquirer_settings_array = (array) $json_array['acquirer_settings'];
-            // $acquirer_names = array_keys($acquirer_array);
-
-            foreach ($acquirer_settings_array as $key => $obj) {
-                $acquirer_setting->acquirer = new Acquirer([
-                    'name' => $key,
-                    'active' => $obj->active,
-                ]);
-            }
-
-            $merchant->acquirer_setting = $acquirer_setting;
-
             return $merchant;
         }
         throw new \Exception(
@@ -85,12 +74,24 @@ class AccountService implements AccountRepository
         $data = array_merge(
             [
                 'json' => $model->toJson(),
-                'debug' => true,
             ],
             $this->buildHeaders()
         );
 
-        // $response = $this->client->patch('account', $data);
+        $response = $this->client->patch('account', $data);
+        if ($response->getStatusCode() == 200) {
+            $body = $response->getBody();
+            $json_array = (array) json_decode($body->getContents());
+            $merchant = new Merchant();
+            $merchant->fill(
+                $merchant->filterJson($merchant->getFillable(), $json_array)
+            );
+            return $merchant;
+        }
+        throw new \Exception(sprintf(
+            'PATCH request returned status code [%s]',
+            $response->getStatusCode()
+        ));
     }
 
     public function delete()

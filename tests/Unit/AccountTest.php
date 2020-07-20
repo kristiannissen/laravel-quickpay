@@ -31,12 +31,10 @@ class AccountTest extends TestCase
     {
         $merchant = $this->merchant;
         $account = new AccountService();
-        $account->patch($merchant);
-        $this->assertEquals(1, 1);
-    }
-
-    public function test_merchant_has_acquirers()
-    {
-        $this->assertTrue(count($this->merchant->acquirer_settings) > 0);
+        $merchant = $account->patch($merchant);
+        $this->assertEquals(
+            'Demo Shop',
+            $merchant->shop_name
+        );
     }
 }
