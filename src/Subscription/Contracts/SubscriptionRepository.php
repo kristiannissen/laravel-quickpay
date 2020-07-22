@@ -6,7 +6,7 @@
 namespace QuickPay\Subscription\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 interface SubscriptionRepository
 {

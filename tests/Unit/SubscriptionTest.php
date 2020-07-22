@@ -20,7 +20,9 @@ class SubscriptionTest extends TestCase {
 
     public function test_get_all_subscriptions()
     {
-        $this->assertTrue(true);
+      $service = new SubscriptionService();
+  		$collection = $service->getAll();
+			$this->assertTrue($collection->count() >= 0);
     }
 
     public function test_create_subscription()

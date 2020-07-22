@@ -7,7 +7,7 @@ namespace QuickPay\Subscription;
 
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use QuickPay\Subscription\Contracts\SubscriptionRepository;
 use QuickPay\Subscription\Subscription;
 use Illuminate\Support\Facades\Log;
@@ -39,6 +39,28 @@ class SubscriptionService implements SubscriptionRepository {
     }
 
     public function getAll(): Collection {
+			$request_data = array_merge(
+				[],
+				$this->buildHeaders()
+			);
+			$response = $this->client->get('subscriptions', $request_data);
+			if ($response->getStatusCode() == 200) {
+				$body = $response->getBody();
+				$subscriptions = [];
+				$json_resp = json_decode($body->getContents());
+
+				foreach($json_resp as $sub) {
+					$subscription = new Subscription((array) json_encode($sub));
+					array_push($subscriptions, $subscription);
+				}
+
+				return collect($subscriptions);
+			}
+			throw new \Exception(sprintf(
+				'GET call to subscriptions from [%s] returned [%s]',
+				get_class($this),
+				$response->getStatusCode()
+			));
     }
 
     public function create(array $order_data): Model {
