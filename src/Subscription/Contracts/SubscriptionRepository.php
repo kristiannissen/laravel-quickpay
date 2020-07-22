@@ -13,6 +13,6 @@ interface SubscriptionRepository
     public function getAll(): Collection;
 		public function get($id): Model;
     public function create(array $order_data): Model;
-    public function update(array $order_data): Model;
+    public function update(Model $model): Model;
     public function cancel(Model $model): bool;
 }

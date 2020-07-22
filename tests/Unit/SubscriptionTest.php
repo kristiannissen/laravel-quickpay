@@ -41,4 +41,17 @@ class SubscriptionTest extends TestCase {
 				$subscription->description
 			);
 		}
+
+		public function test_update_subscription()
+		{
+			$service = new SubscriptionService();
+			$subscription = $service->get(196632144);
+			$subscription->description = 'Hello Kitty 2.0 is rad!';
+			$updated_sub = $service->update($subscription);
+
+			$this->assertEquals(
+				$subscription->description,
+				$updated_sub->description
+			);
+		}
 }

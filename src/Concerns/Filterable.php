@@ -30,4 +30,16 @@ trait Filterable
     {
         return http_build_query($this->attributesToArray());
     }
+
+		public function toFormArray($filter = [])
+		{
+			$attributes = $this->toArray();
+			if (count($filter)) {
+				foreach ($attributes as $key => $val) {
+					if (in_array($key, $filter))
+						unset($attributes[$key]);
+				}
+			}
+			return $attributes;
+		}
 }

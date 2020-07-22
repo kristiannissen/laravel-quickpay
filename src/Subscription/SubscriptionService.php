@@ -72,6 +72,10 @@ class SubscriptionService implements SubscriptionRepository {
 			if ($response->getStatusCode() == 201) {
 				$body = $response->getBody();
 				$json_array = (array) json_decode($body->getContents());
+				$subscription = new Subscription();
+				$subscription->fill(
+					$subscription->filterJson($subscription->getFillable(), $json_array)
+				);
 
 				return new Subscription($json_array);
 			}
@@ -87,7 +91,12 @@ class SubscriptionService implements SubscriptionRepository {
 			if ($response->getStatusCode() == 200) {
 				$body = $response->getBody();
 				$json = json_decode($body->getContents());
-				return new Subscription((array) $json);
+				$subscription = new Subscription();
+				$subscription->fill(
+					$subscription->filterJson($subscription->getFillable(), (array) $json)
+				);
+				
+				return $subscription;
 			}
 			throw new \Exception(sprintf(
 				'GET request to subscriptions from [%s] returned [%s]',
@@ -96,7 +105,23 @@ class SubscriptionService implements SubscriptionRepository {
 			));
 		}
 
-    public function update(array $order_data): Model {}
+    public function update(Model $model): Model {
+			$request_data = array_merge(
+				['form_data' => $model->toFormArray(['id'])],
+				$this->buildHeaders()
+			);
+			$response = $this->client->patch("subscriptions/$model->id", $this->buildHeaders());
+			if ($response->getStatusCode() == 200) {
+				$body = $response->getBody();
+				$json = json_decode($body->getContents());
+				$subscription = new Subscription();
+				$subscription->fill(
+					$subscription->filterJson($subscription->getFillable(), (array) $json)
+				);
+
+				return $subscription;
+			}
+		}
 
     public function cancel(Model $model): bool {}
 }
