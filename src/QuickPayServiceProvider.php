@@ -3,19 +3,11 @@
 namespace QuickPay;
 
 use Illuminate\Support\ServiceProvider;
-use QuickPay\Facades\Ping;
-use QuickPay\Facades\Changelog;
 
 class QuickPayServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->app->bind('ping', function ($app) {
-            return new Ping();
-        });
-        $this->app->bind('changelog', function ($app) {
-            return new Changelog();
-        });
         $this->mergeConfigFrom($this->loadConfig(), 'quickpay');
     }
 
