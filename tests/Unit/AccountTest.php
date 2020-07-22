@@ -32,9 +32,6 @@ class AccountTest extends TestCase
         $merchant = $this->merchant;
         $account = new AccountService();
         $merchant = $account->patch($merchant);
-        $this->assertEquals(
-            'Demo Shop',
-            $merchant->shop_name
-        );
+        $this->assertEquals('Demo Shop', $merchant->shop_name);
     }
 }

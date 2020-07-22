@@ -88,10 +88,12 @@ class AccountService implements AccountRepository
             );
             return $merchant;
         }
-        throw new \Exception(sprintf(
-            'PATCH request returned status code [%s]',
-            $response->getStatusCode()
-        ));
+        throw new \Exception(
+            sprintf(
+                'PATCH request returned status code [%s]',
+                $response->getStatusCode()
+            )
+        );
     }
 
     public function delete()
