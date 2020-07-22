@@ -132,7 +132,10 @@ class SubscriptionService implements SubscriptionRepository
             $this->buildHeaders()
         );
         if ($response->getStatusCode() == 200) {
-            $body = $response->getBody();
+            /**
+						 * FIXME: There is a bug in the QuickPay system
+						 * it currently does not return the updated model
+						$body = $response->getBody();
             $json = json_decode($body->getContents());
             $subscription = new Subscription();
             $subscription->fill(
@@ -141,6 +144,8 @@ class SubscriptionService implements SubscriptionRepository
                     (array) $json
                 )
             );
+						*/
+						$subscription = $this->get($model->id);
 
             return $subscription;
         }
