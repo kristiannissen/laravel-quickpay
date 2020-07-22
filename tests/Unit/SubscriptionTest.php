@@ -15,7 +15,7 @@ class SubscriptionTest extends TestCase {
 						'order_id' => substr(md5(microtime()), rand(0,26), 10),
 						'currency' => 'DKK',
 						'description' => 'Your Hello Kitty Subscription'
-					];    
+					];
     }
 
     public function test_get_all_subscriptions()
@@ -31,4 +31,14 @@ class SubscriptionTest extends TestCase {
         $subscription = $service->create($this->fake_data);
         $this->assertFalse(is_null($subscription->id));
     }
+
+		public function test_get_subscription()
+		{
+			$service = new SubscriptionService();
+			$subscription = $service->get(196632144);
+			$this->assertEquals(
+				$this->fake_data['description'],
+				$subscription->description
+			);
+		}
 }

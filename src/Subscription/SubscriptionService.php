@@ -82,6 +82,20 @@ class SubscriptionService implements SubscriptionRepository {
 			));
     }
 
+		public function get($id): Model {
+			$response = $this->client->get("subscriptions/$id", $this->buildHeaders());
+			if ($response->getStatusCode() == 200) {
+				$body = $response->getBody();
+				$json = json_decode($body->getContents());
+				return new Subscription((array) $json);
+			}
+			throw new \Exception(sprintf(
+				'GET request to subscriptions from [%s] returned [%s]',
+				get_class($this),
+				$response->getStatusCode()
+			));
+		}
+
     public function update(array $order_data): Model {}
 
     public function cancel(Model $model): bool {}
