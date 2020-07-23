@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use QuickPay\Subscription\Contracts\SubscriptionRepository;
 use QuickPay\Subscription\Subscription;
-use Illuminate\Support\Facades\Log;
 
 class SubscriptionService implements SubscriptionRepository
 {
@@ -132,26 +131,32 @@ class SubscriptionService implements SubscriptionRepository
             $this->buildHeaders()
         );
         if ($response->getStatusCode() == 200) {
-            /**
-						 * FIXME: There is a bug in the QuickPay system
-						 * it currently does not return the updated model
-						$body = $response->getBody();
-            $json = json_decode($body->getContents());
-            $subscription = new Subscription();
-            $subscription->fill(
-                $subscription->filterJson(
-                    $subscription->getFillable(),
-                    (array) $json
-                )
-            );
-						*/
-						$subscription = $this->get($model->id);
+            $subscription = $this->get($model->id);
 
             return $subscription;
         }
     }
 
-    public function cancel(Model $model): bool
+    public function authorize(array $order_data, $subscription_id)
     {
+        $request_data = array_merge(
+            ['form_data' => $order_data],
+            $this->buildHeaders()
+        );
+        $response = $this->client->post(
+            "subscriptions/$subscription_id/authorize",
+            $request_data
+        );
+        if ($response->getStatusCode() == 202) {
+            $body = $response->getBody();
+            $json = $body->getContents();
+            dd($json);
+        }
+        throws\Exception(
+            sprintf(
+                'Call to authorize() failed! Endpoint returned [%s]',
+                $response->getStatusCode()
+            )
+        );
     }
 }

@@ -56,4 +56,14 @@ class SubscriptionTest extends TestCase
             $updated_sub->description
         );
     }
+
+		public function test_authorize_subscription()
+		{
+			$service = new SubscriptionService();
+			$subscription = $service->authorize([
+				'amount' => 2000
+			], 196632144);
+
+			$this->assertTrue(true);
+		}
 }
