@@ -18,7 +18,7 @@ abstract class QuickPayService
     public static function getClient()
     {
         return new Client([
-            'base_uri' => 'https://api.quickpay.net'
+            'base_uri' => 'https://api.quickpay.net',
         ]);
     }
 

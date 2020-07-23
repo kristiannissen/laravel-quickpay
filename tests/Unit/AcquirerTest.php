@@ -7,7 +7,6 @@ use QuickPay\Acquirer\AcquirerService;
 
 class AcquirerTest extends TestCase
 {
-
     public function setUp(): void
     {
         parent::setUp();
@@ -19,5 +18,14 @@ class AcquirerTest extends TestCase
         $acquirers = $service->getAll();
 
         $this->assertTrue($acquirers->count() >= 0);
+    }
+
+    public function test_has_attributes()
+    {
+        $service = new AcquirerService();
+        $acquirers = $service->getAll();
+        $acquirer = $acquirers->first();
+
+        $this->assertTrue(count($acquirer->settings) > 0);
     }
 }

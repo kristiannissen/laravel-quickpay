@@ -11,19 +11,24 @@ use QuickPay\QuickPayService;
 
 class AcquirerService extends QuickPayService
 {
-    public function getAll(): Collection {
+    public function getAll(): Collection
+    {
         $response = $this->client->get('acquirers', $this->withHeaders());
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
             $json = json_decode($body->getContents(), true);
-            $acquirers = array_map(function ($key) {
-                return new Acquirer(['name' => $key]);
-            },array_keys($json));
+            $acquirers = array_map(function ($key) use ($json) {
+                return new Acquirer(
+                    ['name' => $key, 'settings' => $json[$key]]
+                );
+            }, array_keys($json));
             return collect($acquirers);
         }
-        throw new \Exception(sprintf(
-            'GET returned [%s] when called in getAll()',
-            $response->getStatusCode()
-        ));
+        throw new \Exception(
+            sprintf(
+                'GET returned [%s] when called in getAll()',
+                $response->getStatusCode()
+            )
+        );
     }
 }
