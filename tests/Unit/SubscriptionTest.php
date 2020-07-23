@@ -63,6 +63,7 @@ class SubscriptionTest extends TestCase
         $subscription = $service->authorize(
             [
                 'amount' => 2000,
+                'acquirer' => 'clearhaus',
             ],
             196632144
         );

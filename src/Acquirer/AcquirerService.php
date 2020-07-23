@@ -18,9 +18,10 @@ class AcquirerService extends QuickPayService
             $body = $response->getBody();
             $json = json_decode($body->getContents(), true);
             $acquirers = array_map(function ($key) use ($json) {
-                return new Acquirer(
-                    ['name' => $key, 'settings' => $json[$key]]
-                );
+                return new Acquirer([
+                    'name' => $key,
+                    'settings' => $json[$key],
+                ]);
             }, array_keys($json));
             return collect($acquirers);
         }
