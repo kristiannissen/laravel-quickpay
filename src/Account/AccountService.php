@@ -16,6 +16,7 @@ use QuickPay\QuickPayService;
 
 class AccountService extends QuickPayService
 {
+
     public function get()
     {
         $response = $this->client->get('account', $this->withHeaders());
@@ -45,11 +46,11 @@ class AccountService extends QuickPayService
         );
     }
 
-    public function patch(Model $model)
+    public function update(Model $model)
     {
         $data = array_merge(
             [
-                'json' => $model->toJson(),
+                'form_params' => $model->toArray(),
             ],
             $this->withHeaders()
         );
@@ -72,8 +73,4 @@ class AccountService extends QuickPayService
         );
     }
 
-    public function delete()
-    {
-        throw new \Exception('This method is not implemented');
-    }
 }
