@@ -98,7 +98,7 @@ class SubscriptionService extends QuickPayService
     public function update(Model $model): Model
     {
         $request_data = array_merge(
-            ['form_data' => $model->toFormArray(['id'])],
+            ['form_params' => $model->toFormArray(['id'])],
             $this->withHeaders()
         );
         $response = $this->client->patch(
@@ -117,7 +117,7 @@ class SubscriptionService extends QuickPayService
         $response = null;
         try {
             $request_data = array_merge(
-                ['form_data' => $order_data],
+                ['form_params' => $order_data],
                 $this->withHeaders()
             );
             $response = $this->client->post(
@@ -140,7 +140,7 @@ class SubscriptionService extends QuickPayService
     public function getPaymentLinkUrl(array $form_data, $subscription_id)
     {
         $request_data = array_merge(
-            ['json' => json_encode($form_data), 'debug' => true],
+            ['form_params' => $form_data],
             $this->withHeaders()
         );
         $response = $this->client->put(
@@ -149,8 +149,9 @@ class SubscriptionService extends QuickPayService
         );
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
-            $json = $body->getContents();
-            dd($json);
+            $json = (array) json_decode($body->getContents());
+
+            return $json['url'];
         }
         throws\Exception('Problme wiht link');
     }
