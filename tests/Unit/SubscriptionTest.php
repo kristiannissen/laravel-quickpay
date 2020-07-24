@@ -70,4 +70,17 @@ class SubscriptionTest extends TestCase
 
         $this->assertTrue(true);
     }
+
+    public function test_get_paymentlinkurl()
+    {
+        $service = new SubscriptionService();
+        $url = $service->getPaymentLinkUrl(
+            [
+                'amount' => 2000,
+            ],
+            196632144
+        );
+
+        $this->assertTrue(true);
+    }
 }
