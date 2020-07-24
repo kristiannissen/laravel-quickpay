@@ -12,37 +12,13 @@ use QuickPay\Account\Address;
 use Illuminate\Database\Eloquent\Model;
 use QuickPay\Account\Acquirer;
 use QuickPay\Account\AcquirerSetting;
+use QuickPay\QuickPayService;
 
-class AccountService implements AccountRepository
+class AccountService extends QuickPayService
 {
-    protected $client;
-
-    public function __construct()
-    {
-        $this->client = AccountService::getClient();
-    }
-
-    protected static function getClient()
-    {
-        return new Client([
-            'base_uri' => 'https://api.quickpay.net/account',
-        ]);
-    }
-
-    protected function buildHeaders(): array
-    {
-        return [
-            'auth' => ['', config('quickpay.api_key')],
-            'headers' => [
-                'Accept-Version' => config('quickpay.version'),
-                'Accept' => 'application/json',
-            ],
-        ];
-    }
-
     public function get()
     {
-        $response = $this->client->get('account', $this->buildHeaders());
+        $response = $this->client->get('account', $this->withHeaders());
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
             $json_object = json_decode($body->getContents());
@@ -75,7 +51,7 @@ class AccountService implements AccountRepository
             [
                 'json' => $model->toJson(),
             ],
-            $this->buildHeaders()
+            $this->withHeaders()
         );
 
         $response = $this->client->patch('account', $data);
