@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use QuickPay\Subscription\Subscription;
+use QuickPay\Subscription\Exception\SubscriptionException;
 use QuickPay\QuickPayService;
 
 class SubscriptionService extends QuickPayService
@@ -29,12 +30,14 @@ class SubscriptionService extends QuickPayService
 
             return collect($subscriptions);
         }
-        throw new \Exception(
+        throw new SubscriptionException(
             sprintf(
                 'GET call to subscriptions from [%s] returned [%s]',
                 get_class($this),
                 $response->getStatusCode()
-            )
+            ),
+            $response->getStatusCode(),
+            null
         );
     }
 
@@ -114,7 +117,6 @@ class SubscriptionService extends QuickPayService
 
     public function authorize(array $order_data, $subscription_id)
     {
-        $response = null;
         try {
             $request_data = array_merge(
                 ['form_params' => $order_data],
@@ -156,30 +158,27 @@ class SubscriptionService extends QuickPayService
         throws\Exception('Problem wiht link');
     }
 
-    public function cancel($subscription_id): bool
+    public function cancel($subscription_id)
     {
-        $request_data = array_merge(
-            [
-                'debug' => true,
-            ],
-            $this->withHeaders()
-        );
-        $response = $this->client->post(
-            "subscriptions/$subscription_id/cancel",
-            $request_data
-        );
-        if ($response->getStatusCode() == 202) {
-            return true;
-        }
-        $body = $response->getBody();
-        $json = json_decode($body);
+        $request_data = array_merge([], $this->withHeaders());
+        try {
+            $response = $this->client->post(
+                "subscriptions/$subscription_id/cancel",
+                $request_data
+            );
+            if ($response->getStatusCode() == 202) {
+                return true;
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $body = $response->getBody();
+            $json = json_decode($body);
 
-        throws\Exception(
-            sprintf(
-                'Cancel operation failed: [%s] Status code [%s]',
+            return new SubscriptionException(
                 $json->message,
-                $response->getStatusCode()
-            )
-        );
+                $response->getStatusCode(),
+                $e
+            );
+        }
     }
 }
