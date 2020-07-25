@@ -23,7 +23,7 @@ class SubscriptionService extends QuickPayService
             $json_resp = json_decode($body->getContents());
 
             foreach ($json_resp as $sub) {
-                $subscription = new Subscription((array) json_encode($sub));
+                $subscription = new Subscription((array) $sub);
                 array_push($subscriptions, $subscription);
             }
 
@@ -153,6 +153,33 @@ class SubscriptionService extends QuickPayService
 
             return $json['url'];
         }
-        throws\Exception('Problme wiht link');
+        throws\Exception('Problem wiht link');
+    }
+
+    public function cancel($subscription_id): bool
+    {
+        $request_data = array_merge(
+            [
+                'debug' => true,
+            ],
+            $this->withHeaders()
+        );
+        $response = $this->client->post(
+            "subscriptions/$subscription_id/cancel",
+            $request_data
+        );
+        if ($response->getStatusCode() == 202) {
+            return true;
+        }
+        $body = $response->getBody();
+        $json = json_decode($body);
+
+        throws\Exception(
+            sprintf(
+                'Cancel operation failed: [%s] Status code [%s]',
+                $json->message,
+                $response->getStatusCode()
+            )
+        );
     }
 }

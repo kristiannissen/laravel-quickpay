@@ -64,8 +64,13 @@ class SubscriptionTest extends TestCase
             [
                 'amount' => 2000,
                 'acquirer' => 'clearhaus',
+                'card' => [
+                    'number' => '1000000000000008',
+                    'expiration' => '03/22',
+                    'cvd' => '666',
+                ],
             ],
-            196632144
+            196875423
         );
 
         $this->assertTrue(true);
@@ -81,6 +86,15 @@ class SubscriptionTest extends TestCase
             196632144
         );
 
-        $this->assertTrue(true);
+        $this->assertIsString($url);
+    }
+
+    public function test_cancel_subscription()
+    {
+        $service = new SubscriptionService();
+        $subscription = $service->getAll()->first();
+        $cancel = $service->cancel($subscription->id);
+
+        $this->assertTrue($cancel);
     }
 }

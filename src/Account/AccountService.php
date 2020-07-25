@@ -16,7 +16,6 @@ use QuickPay\QuickPayService;
 
 class AccountService extends QuickPayService
 {
-
     public function get()
     {
         $response = $this->client->get('account', $this->withHeaders());
@@ -72,5 +71,4 @@ class AccountService extends QuickPayService
             )
         );
     }
-
 }
