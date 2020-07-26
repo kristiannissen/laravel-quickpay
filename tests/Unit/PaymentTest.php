@@ -25,6 +25,13 @@ class PaymentTest extends TestCase
                     'item_price' => 2000,
                     'vat_rate' => 25,
                 ],
+                [
+                    'qty' => 1,
+                    'item_no' => 666,
+                    'item_name' => 'Hello Pussy',
+                    'item_price' => 3000,
+                    'vat_rate' => 25,
+                ],
             ],
         ];
     }
@@ -34,6 +41,6 @@ class PaymentTest extends TestCase
         $service = new PaymentService();
         $payment = $service->create($this->fake_data);
 
-        $this->assertTrue(true);
+        $this->assertFalse(is_null($payment->id));
     }
 }
