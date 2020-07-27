@@ -32,4 +32,24 @@ abstract class QuickPayService
             ],
         ];
     }
+
+    public function getJson($response)
+    {
+        $body = $response->getBody();
+        return json_decode($body->getContents());
+    }
+
+    public function errorsToString($json)
+    {
+        $str = '';
+        $errors = (array) $json->errors;
+        foreach (array_keys($errors) as $key) {
+            $str .= $key . ' - ';
+            foreach ($errors[$key] as $val) {
+                $str .= $val;
+            }
+        }
+
+        return $str;
+    }
 }
