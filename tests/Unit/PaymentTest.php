@@ -75,9 +75,12 @@ class PaymentTest extends TestCase
     {
         $service = new PaymentService();
         $payment = $service->getAll(['state' => 'new'])->first();
-        $data = $service->capture([
-            'amount' => 10
-        ], $payment->id);
+        $data = $service->capture(
+            [
+                'amount' => 10,
+            ],
+            $payment->id
+        );
 
         $this->assertEquals($data->state, 'pending');
     }

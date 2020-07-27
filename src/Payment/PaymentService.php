@@ -65,10 +65,7 @@ class PaymentService extends QuickPayService
             $this->withHeaders()
         );
         try {
-            $response = $this->client->get(
-                'payments',
-                $request_data
-            );
+            $response = $this->client->get('payments', $request_data);
             if ($response->getStatusCode() == 200) {
                 $json = $this->getJson($response);
                 $payments = [];
