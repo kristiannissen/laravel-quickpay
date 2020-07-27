@@ -46,7 +46,7 @@ class PaymentService extends QuickPayService
 
             throw new PaymentException(
                 sprintf(
-                    'An Exception was thrown - %s check %s',
+                    'Create threw an exception - %s check %s',
                     $json->message,
                     $this->errorsToString($json)
                 ),
@@ -84,7 +84,7 @@ class PaymentService extends QuickPayService
             $json = $this->getJson($response);
             throw new PaymentException(
                 sprintf(
-                    'An Exception was thrown - %s check %s',
+                    'GetAll threw an exception - %s check %s',
                     $json->message,
                     $this->errorsToString($json)
                 ),
@@ -119,7 +119,7 @@ class PaymentService extends QuickPayService
             $json = $this->getJson($response);
             throw new PaymentException(
                 sprintf(
-                    'An Exception was thrown - %s check %s',
+                    'GetPaymentLinkUrl threw an exception - %s check %s',
                     $json->message,
                     $this->errorsToString($json)
                 ),
@@ -156,9 +156,10 @@ class PaymentService extends QuickPayService
             $json = $this->getJson($response);
             throw new PaymentException(
                 sprintf(
-                    'Authorize threw an exception - %s check %s',
+                    'Authorize threw an exception - %s check %s - payment id %s',
                     $json->message,
-                    $this->errorsToString($json)
+                    $this->errorsToString($json),
+                    $payment_id
                 ),
                 $response->getStatusCode(),
                 null
