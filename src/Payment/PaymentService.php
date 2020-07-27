@@ -35,10 +35,11 @@ class PaymentService extends QuickPayService
 
                 $payment = new Payment((array) $json);
                 PaymentEvent::dispatch($payment);
-
                 return $payment;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
+            // TODO: Move thid to the abstract class, use __FUNCTION__ to get
+            // the current method throwing the exception
             $response = $e->getResponse();
             $json = $this->getJson($response);
 
