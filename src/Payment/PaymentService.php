@@ -56,9 +56,14 @@ class PaymentService extends QuickPayService
         }
     }
     /**
+     * This method returns all matching payments
      *
+     * @param array $query_params (check
+     * https://learn.quickpay.net/tech-talk/api/services/#services)
+     * @return collection
+     * @throws PaymentException
      */
-    public function getAll(array $query_params = [])
+    public function getAll(array $query_params = []): Collection
     {
         $request_data = array_merge(
             ['query' => $query_params],
