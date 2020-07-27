@@ -5,6 +5,7 @@ namespace QuickPay\Tests\Unit;
 use QuickPay\Tests\TestCase;
 use QuickPay\Payment\PaymentService;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Event;
 
 class PaymentTest extends TestCase
 {
@@ -17,30 +18,35 @@ class PaymentTest extends TestCase
         $this->fake_data = [
             'order_id' => Str::random(10),
             'currency' => 'DKK',
-            'basket' => [
-                [
-                    'qty' => 1,
-                    'item_no' => 42,
-                    'item_name' => 'Hello Kitty',
-                    'item_price' => 2000,
-                    'vat_rate' => 25,
-                ],
-                [
-                    'qty' => 1,
-                    'item_no' => 666,
-                    'item_name' => 'Hello Pussy',
-                    'item_price' => 3000,
-                    'vat_rate' => 25,
-                ],
-            ],
         ];
     }
-
-    public function test_create_payment()
+    /**
+     */
+    public function test_create_payment_succeeded()
     {
         $service = new PaymentService();
         $payment = $service->create($this->fake_data);
 
         $this->assertFalse(is_null($payment->id));
+    }
+    /**
+     */
+    public function test_get_all()
+    {
+        $service = new PaymentService();
+        $payments = $service->getAll();
+
+        $this->assertTrue($payments->count() >= 0);
+    }
+    /**
+     *
+     */
+    public function test_get_paymentlink_url()
+    {
+        $service = new PaymentService();
+        $payment = $service->getAll()->first();
+        $url = $service->getPaymentLinkUrl(['amount' => 2000], $payment->id);
+
+        $this->assertIsString($url);
     }
 }
