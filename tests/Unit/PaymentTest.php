@@ -84,4 +84,13 @@ class PaymentTest extends TestCase
 
         $this->assertEquals($data->state, 'pending');
     }
+
+    public function test_refund()
+    {
+        $service = new PaymentService();
+        $payment = $service->getAll(['state' => 'processed'])->first();
+        $data = $service->refund(['amount' => 1], $payment->id);
+
+        $this->assertEquals($data->state, 'pending');
+    }
 }

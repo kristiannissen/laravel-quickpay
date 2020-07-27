@@ -94,7 +94,10 @@ class PaymentService extends QuickPayService
         }
     }
     /**
-     *
+     * @param array $form_params
+     * @param integer $payment_id
+     * @return string
+     * @throws PaymentException
      */
     public function getPaymentLinkURL(array $form_params = [], $payment_id)
     {
@@ -126,7 +129,10 @@ class PaymentService extends QuickPayService
         }
     }
     /**
-     *
+     * @param array $form_params
+     * @param integer $payment_id
+     * @return model
+     * @throws PaymentException
      */
     public function authorize(array $form_params = [], $payment_id)
     {
@@ -160,9 +166,12 @@ class PaymentService extends QuickPayService
         }
     }
     /**
-     *
+     * @param array $form_params
+     * @param integer $payment_id
+     * @return model Payment
+     * @throws PaymentException
      */
-    public function capture(array $form_params = [], $payment_id)
+    public function capture(array $form_params = [], $payment_id): Payment
     {
         $request_data = array_merge(
             ['form_params' => $form_params],
@@ -186,6 +195,42 @@ class PaymentService extends QuickPayService
             throw new PaymentException(
                 sprintf(
                     'Capture threw an exception - %s check %s - payment id %s',
+                    $json->message,
+                    $this->errorsToString($json),
+                    $payment_id
+                ),
+                $response->getStatusCode(),
+                null
+            );
+        }
+    }
+    /**
+     *
+     */
+    public function refund(array $form_params = [], $payment_id)
+    {
+        $request_data = array_merge(
+            ['form_params' => $form_params],
+            $this->withHeaders()
+        );
+        try {
+            $response = $this->client->post(
+                "payments/$payment_id/refund",
+                $request_data
+            );
+            if ($response->getStatusCode() == 202) {
+                $json = $this->getJson($response);
+                $payment = new Payment((array) $json);
+                PaymentEvent::dispatch($payment);
+                return $payment;
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $json = $this->getJson($response);
+
+            throw new PaymentException(
+                sprintf(
+                    'Refund threw an exception - %s check %s - payment id %s',
                     $json->message,
                     $this->errorsToString($json),
                     $payment_id
