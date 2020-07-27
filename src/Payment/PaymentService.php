@@ -116,4 +116,36 @@ class PaymentService extends QuickPayService
             );
         }
     }
+    /**
+     *
+     */
+    public function authorize(array $form_params = [], $payment_id)
+    {
+        $request_data = array_merge(
+            ['form_params' => $form_params],
+            $this->withHeaders()
+        );
+        try {
+            $response = $this->client->post(
+                "payments/$payment_id/authorize",
+                $request_data
+            );
+            if ($response->getStatusCode() == 202) {
+                $json = $this->getJson($response);
+                return new Payment((array) $json);
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $json = $this->getJson($response);
+            throw new PaymentException(
+                sprintf(
+                    'An Exception was thrown - %s check %s',
+                    $json->message,
+                    $this->errorsToString($json)
+                ),
+                $response->getStatusCode(),
+                null
+            );
+        }
+    }
 }

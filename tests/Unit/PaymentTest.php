@@ -49,4 +49,25 @@ class PaymentTest extends TestCase
 
         $this->assertIsString($url);
     }
+    /**
+     */
+    public function test_authorize()
+    {
+        $service = new PaymentService();
+        $payment = $service->getAll()->first();
+        $data = $service->authorize(
+            [
+                'amount' => 1000,
+                'acquirer' => 'clearhaus',
+                'card' => [
+                    'number' => '1000000000000008',
+                    'expiration' => '2203',
+                    'cvd' => '666',
+                ],
+            ],
+            $payment->id
+        );
+
+        $this->assertEquals($data->state, 'pending');
+    }
 }
