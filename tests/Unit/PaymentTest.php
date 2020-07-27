@@ -70,4 +70,15 @@ class PaymentTest extends TestCase
 
         $this->assertEquals($data->state, 'pending');
     }
+
+    public function test_capture()
+    {
+        $service = new PaymentService();
+        $payment = $service->getAll(['state' => 'new'])->first();
+        $data = $service->capture([
+            'amount' => 10
+        ], $payment->id);
+
+        $this->assertEquals($data->state, 'pending');
+    }
 }
