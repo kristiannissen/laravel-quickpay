@@ -4,7 +4,6 @@
 namespace QuickPay\Acquirer;
 
 use GuzzleHttp\Client;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use QuickPay\Acquirer\Acquirer;
 use QuickPay\QuickPayService;
@@ -12,6 +11,11 @@ use QuickPay\Acquirer\AcquirerException;
 
 class AcquirerService extends QuickPayService
 {
+    /**
+     * Request all Acquirers
+     *
+     * @throws AcquirerException
+     */
     public function getAll(): Collection
     {
         try {
