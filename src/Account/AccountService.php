@@ -1,7 +1,8 @@
 <?php
 /**
- *
- *
+ * Replresents Merchant and implements Get and Update methods
+ * https://learn.quickpay.net/tech-talk/api/services/#account
+ * It does not offer Deleting the Merchant
  */
 namespace QuickPay\Account;
 
