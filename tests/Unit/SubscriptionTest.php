@@ -31,7 +31,7 @@ class SubscriptionTest extends TestCase
     {
         $service = new SubscriptionService();
         $subscription = $service->create($this->fake_data);
-        
+
         $this->assertFalse(is_null($subscription->id));
 
         $this->markTestSkipped('Creates too many entries');
