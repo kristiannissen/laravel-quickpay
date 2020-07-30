@@ -1,5 +1,8 @@
 <?php
 /**
+ * This class represents the Acquirer service
+ * it returns a collection of available Acquirers and their individual settings
+ * 
  */
 namespace QuickPay\Acquirer;
 
@@ -14,6 +17,7 @@ class AcquirerService extends QuickPayService
     /**
      * Request all Acquirers
      *
+     * @return Collection $collection
      * @throws AcquirerException
      */
     public function getAll(): Collection
