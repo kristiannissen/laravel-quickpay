@@ -36,7 +36,7 @@ class Merchant extends Model
         return $this->hasOne('QuickPay\Account\Address');
     }
 
-    public function delivery_address()
+    public function billing_address()
     {
         return $this->hasOne('QuickPay\Account\Address');
     }

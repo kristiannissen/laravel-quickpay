@@ -10,13 +10,17 @@ use GuzzleHttp\Client;
 use QuickPay\Account\Merchant;
 use QuickPay\Account\Address;
 use Illuminate\Database\Eloquent\Model;
-use QuickPay\Account\Acquirer;
-use QuickPay\Account\AcquirerSetting;
 use QuickPay\QuickPayService;
 use QuickPay\Account\AccountException;
 
 class AccountService extends QuickPayService
 {
+    /**
+     * Gets the Merchant data
+     *
+     * @return Model Merchant
+     * @throws AccountException
+     */
     public function get(): Model
     {
         try {
@@ -30,12 +34,20 @@ class AccountService extends QuickPayService
                 $merchant->fill(
                     $merchant->filterJson($merchant->getFillable(), $json_array)
                 );
-                $merchant->address = new Address(
+                $merchant->customer_address = new Address(
                     array_merge(
                         ['address_type' => 'customer_address'],
                         (array) $json_array['customer_address']
                     )
                 );
+                if (is_null($json_array['billing_address']) == false) {
+                    $merchant->billing_address = new Address(
+                        array_merge(
+                            ['address_type' => 'billing_address'],
+                            (array) $json_array['billing_address']
+                        )
+                    );
+                }
                 return $merchant;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
@@ -54,7 +66,14 @@ class AccountService extends QuickPayService
             );
         }
     }
-
+    /**
+     * Updates Merchant data
+     *
+     * @param arra $form_params see
+     * https://learn.quickpay.net/tech-talk/api/services for options
+     * @return Model Merchant
+     * @throws AccountException
+     */
     public function update(array $form_params): Model
     {
         $data = array_merge(
