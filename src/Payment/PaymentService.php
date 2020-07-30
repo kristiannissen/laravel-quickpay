@@ -10,6 +10,7 @@ use QuickPay\Payment\Exception\PaymentException;
 use QuickPay\Payment\Payment;
 use QuickPay\Events\PaymentEvent;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class PaymentService extends QuickPayService
 {
@@ -18,10 +19,10 @@ class PaymentService extends QuickPayService
      * in order to create a new payment
      *
      * @param array $form_params;
-     * @return model
+     * @return model Payment
      * @throws PaymentException
      */
-    public function create(array $form_params): Payment
+    public function create(array $form_params): Model
     {
         $request_data = array_merge(
             ['form_params' => $form_params],
@@ -34,20 +35,18 @@ class PaymentService extends QuickPayService
                 $json = $this->getJson($response);
 
                 $payment = new Payment((array) $json);
-                PaymentEvent::dispatch($payment);
+                event(new PaymentEvent($payment));
+
                 return $payment;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            // TODO: Move thid to the abstract class, use __FUNCTION__ to get
-            // the current method throwing the exception
             $response = $e->getResponse();
             $json = $this->getJson($response);
 
-            PaymentEvent::dispatch(new Payment());
-
             throw new PaymentException(
                 sprintf(
-                    'Create threw an exception - %s check %s',
+                    '%s threw an exception - %s check %s',
+                    ucfirst(__FUNCTION__),
                     $json->message,
                     $this->errorsToString($json)
                 ),

@@ -22,13 +22,13 @@ class PaymentTest extends TestCase
     }
     /**
      */
-    public function test_create_payment_succeeded()
+    public function test_create_payment()
     {
         $service = new PaymentService();
         $payment = $service->create($this->fake_data);
 
         $this->assertFalse(is_null($payment->id));
-        $this->markTestSkipped('Creates too many entries');
+        // $this->markTestSkipped('Creates too many entries');
     }
     /**
      */
