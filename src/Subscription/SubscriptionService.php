@@ -17,28 +17,35 @@ class SubscriptionService extends QuickPayService
     public function getAll(): Collection
     {
         $request_data = array_merge([], $this->withHeaders());
-        $response = $this->client->get('subscriptions', $request_data);
-        if ($response->getStatusCode() == 200) {
-            $body = $response->getBody();
-            $subscriptions = [];
-            $json_resp = json_decode($body->getContents());
+        try {
+            $response = $this->client->get('subscriptions', $request_data);
+            if ($response->getStatusCode() == 200) {
+                $body = $response->getBody();
+                $subscriptions = [];
+                $json_resp = json_decode($body->getContents());
 
-            foreach ($json_resp as $sub) {
-                $subscription = new Subscription((array) $sub);
-                array_push($subscriptions, $subscription);
+                foreach ($json_resp as $sub) {
+                    $subscription = new Subscription((array) $sub);
+                    array_push($subscriptions, $subscription);
+                }
+
+                return collect($subscriptions);
             }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $json = $this->getJson($response);
 
-            return collect($subscriptions);
+            throw new SubscriptionException(
+                sprintf(
+                    '%s threw an exception - %s check %s',
+                    ucfirst(__FUNCTION__),
+                    $json->message,
+                    $this->errorsToString($json)
+                ),
+                $response->getStatusCode(),
+                null
+            );
         }
-        throw new SubscriptionException(
-            sprintf(
-                'GET call to subscriptions from [%s] returned [%s]',
-                get_class($this),
-                $response->getStatusCode()
-            ),
-            $response->getStatusCode(),
-            null
-        );
     }
 
     public function create(array $order_data): Model

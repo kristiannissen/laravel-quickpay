@@ -20,7 +20,7 @@ class SubscriptionTest extends TestCase
         ];
     }
 
-    public function test_get_all_subscriptions()
+    public function test_getall()
     {
         $service = new SubscriptionService();
         $collection = $service->getAll();

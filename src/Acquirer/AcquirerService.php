@@ -2,7 +2,7 @@
 /**
  * This class represents the Acquirer service
  * it returns a collection of available Acquirers and their individual settings
- * 
+ *
  */
 namespace QuickPay\Acquirer;
 
