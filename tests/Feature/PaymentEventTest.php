@@ -16,15 +16,13 @@ class PaymentEventTest extends TestCase
         Event::fake();
 
         $service = new PaymentService();
-        $payment = $service->create(
-            [
-                'order_id' => Str::random(10),
-                'amount' => 1000,
-                'currency' => 'DKK'
-            ]
-        );
+        $payment = $service->create([
+            'order_id' => Str::random(10),
+            'amount' => 1000,
+            'currency' => 'DKK',
+        ]);
 
-        Event::assertDispatched(function(PaymentEvent $event) use ($payment) {
+        Event::assertDispatched(function (PaymentEvent $event) use ($payment) {
             return $event->payment->id === $payment->id;
         });
     }

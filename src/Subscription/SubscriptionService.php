@@ -14,9 +14,22 @@ use QuickPay\QuickPayService;
 
 class SubscriptionService extends QuickPayService
 {
-    public function getAll(): Collection
+    /**
+     * Returns all subscriptions
+     *
+     * @param array $query paramters
+     * @return Collection
+     * @throws SubscriptionException
+     */
+    public function getAll(array $query_params): Collection
     {
-        $request_data = array_merge([], $this->withHeaders());
+        $request_data = array_merge(
+            [
+                'query' => $query_params,
+            ],
+            $this->withHeaders()
+        );
+
         try {
             $response = $this->client->get('subscriptions', $request_data);
             if ($response->getStatusCode() == 200) {

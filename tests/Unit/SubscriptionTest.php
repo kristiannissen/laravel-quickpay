@@ -23,7 +23,7 @@ class SubscriptionTest extends TestCase
     public function test_getall()
     {
         $service = new SubscriptionService();
-        $collection = $service->getAll();
+        $collection = $service->getAll(['page_size' => 5]);
         $this->assertTrue($collection->count() >= 0);
     }
 
