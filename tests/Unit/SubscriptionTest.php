@@ -27,14 +27,14 @@ class SubscriptionTest extends TestCase
         $this->assertTrue($collection->count() >= 0);
     }
 
-    public function test_create_subscription()
+    public function test_create()
     {
         $service = new SubscriptionService();
         $subscription = $service->create($this->fake_data);
 
         $this->assertFalse(is_null($subscription->id));
 
-        $this->markTestSkipped('Creates too many entries');
+        // $this->markTestSkipped('Creates too many entries');
     }
 
     public function test_get_subscription()

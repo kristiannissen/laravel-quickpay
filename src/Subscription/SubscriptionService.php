@@ -60,34 +60,50 @@ class SubscriptionService extends QuickPayService
             );
         }
     }
-
+    /**
+     * Creates a new subscription
+     *
+     * @param array $order_data, order_id, currency, description are required
+     * @return model Subscription
+     * @throws SubscriptionException
+     */
     public function create(array $order_data): Model
     {
         $request_data = array_merge(
             ['form_params' => $order_data],
             $this->withHeaders()
         );
-        $response = $this->client->post('subscriptions', $request_data);
-        if ($response->getStatusCode() == 201) {
-            $body = $response->getBody();
-            $json_array = (array) json_decode($body->getContents());
-            $subscription = new Subscription();
-            $subscription->fill(
-                $subscription->filterJson(
-                    $subscription->getFillable(),
-                    $json_array
-                )
-            );
 
-            return new Subscription($json_array);
+        try {
+            $response = $this->client->post('subscriptions', $request_data);
+            if ($response->getStatusCode() == 201) {
+                $body = $response->getBody();
+                $json_array = (array) json_decode($body->getContents());
+                $subscription = new Subscription();
+                $subscription->fill(
+                    $subscription->filterJson(
+                        $subscription->getFillable(),
+                        $json_array
+                    )
+                );
+
+                return new Subscription($json_array);
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $json = $this->getJson($response);
+
+            throw new SubscriptionException(
+                sprintf(
+                    '%s threw an exception - %s check %s',
+                    ucfirst(__FUNCTION__),
+                    $json->message,
+                    $this->errorsToString($json)
+                ),
+                $response->getStatusCode(),
+                null
+            );
         }
-        throw new \Exception(
-            sprintf(
-                'POST call to subscriptions from [%s] returned [%s]',
-                get_class($this),
-                $response->getStatusCode()
-            )
-        );
     }
 
     public function get($id): Model
