@@ -21,7 +21,7 @@ class SubscriptionService extends QuickPayService
      * @return Collection
      * @throws SubscriptionException
      */
-    public function getAll(array $query_params): Collection
+    public function getAll(array $query_params = []): Collection
     {
         $request_data = array_merge(
             [
@@ -133,21 +133,44 @@ class SubscriptionService extends QuickPayService
             )
         );
     }
-
-    public function update(Model $model): Model
+    /**
+     * Updates an existing subscription
+     *
+     * @param array $form_params
+     * @param number $subscription_id
+     * @return model Subscription
+     * @throws SubscriptionException
+     */
+    public function update(array $form_params = [], $subscription_id): Model
     {
         $request_data = array_merge(
-            ['form_params' => $model->toFormArray(['id'])],
+            ['form_params' => $form_params],
             $this->withHeaders()
         );
-        $response = $this->client->patch(
-            "subscriptions/$model->id",
-            $this->withHeaders()
-        );
-        if ($response->getStatusCode() == 200) {
-            $subscription = $this->get($model->id);
+        try {
+            $response = $this->client->patch(
+                "subscriptions/$subscription_id",
+                $request_data
+            );
+            if ($response->getStatusCode() == 200) {
+                $subscription = $this->get($subscription_id);
 
-            return $subscription;
+                return $subscription;
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $json = $this->getJson($response);
+
+            throw new SubscriptionException(
+                sprintf(
+                    '%s threw an exception - %s check %s',
+                    ucfirst(__FUNCTION__),
+                    $json->message,
+                    $this->errorsToString($json)
+                ),
+                $response->getStatusCode(),
+                null
+            );
         }
     }
 

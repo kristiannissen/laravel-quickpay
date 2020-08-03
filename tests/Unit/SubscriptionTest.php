@@ -34,7 +34,7 @@ class SubscriptionTest extends TestCase
 
         $this->assertFalse(is_null($subscription->id));
 
-        // $this->markTestSkipped('Creates too many entries');
+        $this->markTestSkipped('Creates too many entries');
     }
 
     public function test_get_subscription()
@@ -47,17 +47,19 @@ class SubscriptionTest extends TestCase
         );
     }
 
-    public function test_update_subscription()
+    public function test_update()
     {
         $service = new SubscriptionService();
-        $subscription = $service->get(196632144);
-        $subscription->description = 'Hello Kitty 2.0 is rad!';
-        $updated_sub = $service->update($subscription);
+        $sub = $service->getAll()->first();
 
-        $this->assertEquals(
-            $subscription->description,
-            $updated_sub->description
+        $subscription = $service->update(
+            [
+                'description' => 'Hello Pussy Subscription',
+            ],
+            $sub->id
         );
+
+        $this->assertNotEquals($subscription->description, $sub->description);
     }
 
     public function test_authorize_subscription()
