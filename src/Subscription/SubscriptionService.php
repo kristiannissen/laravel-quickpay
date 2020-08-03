@@ -14,6 +14,18 @@ use QuickPay\QuickPayService;
 
 class SubscriptionService extends QuickPayService
 {
+    public static $required_data_types = [
+        'create' => [
+            'order_id:string' =>
+                'Unique order id(must be between 4-20 characters)',
+            'currency:string' => 'Currency eg DKK',
+            'description:string' => 'Subscription description',
+        ],
+        'authorize' => [
+            'id:integer' => 'Subscription id',
+            'amount:number' => 'Amount',
+        ],
+    ];
     /**
      * Returns all subscriptions
      *
@@ -198,6 +210,11 @@ class SubscriptionService extends QuickPayService
      */
     public function authorize(array $order_data, $subscription_id): bool
     {
+        $this->validateParams(
+            self::$required_data_types[__FUNCTION__],
+            array_merge(['id' => $subscription_id], $order_data)
+        );
+
         try {
             $request_data = array_merge(
                 ['form_params' => $order_data],
