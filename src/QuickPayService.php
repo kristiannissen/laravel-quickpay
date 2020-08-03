@@ -12,10 +12,10 @@ abstract class QuickPayService
 
     public function __construct()
     {
-        $this->client = QuickPayService::getClient();
+        $this->client = $this->getClient();
     }
 
-    public static function getClient()
+    public function getClient()
     {
         return new Client([
             'base_uri' => 'https://api.quickpay.net',

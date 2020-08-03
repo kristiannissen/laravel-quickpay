@@ -62,23 +62,25 @@ class SubscriptionTest extends TestCase
         $this->assertNotEquals($subscription->description, $sub->description);
     }
 
-    public function test_authorize_subscription()
+    public function test_authorize()
     {
         $service = new SubscriptionService();
+        $sub = $service->create($this->fake_data);
+
         $subscription = $service->authorize(
             [
                 'amount' => 2000,
                 'acquirer' => 'clearhaus',
                 'card' => [
                     'number' => '1000000000000008',
-                    'expiration' => '03/22',
+                    'expiration' => '2203',
                     'cvd' => '666',
                 ],
             ],
-            196875423
+            $sub->id
         );
 
-        $this->assertTrue(true);
+        $this->assertTrue($subscription);
     }
 
     public function test_get_paymentlinkurl()

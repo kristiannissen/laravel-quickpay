@@ -105,33 +105,48 @@ class SubscriptionService extends QuickPayService
             );
         }
     }
-
+    /**
+     * Get a single subscription
+     *
+     * @param number $id
+     * @return model Subscription
+     * @throws SubscriptionException
+     */
     public function get($id): Model
     {
-        $response = $this->client->get(
-            "subscriptions/$id",
-            $this->withHeaders()
-        );
-        if ($response->getStatusCode() == 200) {
-            $body = $response->getBody();
-            $json = json_decode($body->getContents());
-            $subscription = new Subscription();
-            $subscription->fill(
-                $subscription->filterJson(
-                    $subscription->getFillable(),
-                    (array) $json
-                )
+        try {
+            $response = $this->client->get(
+                "subscriptions/$id",
+                $this->withHeaders()
             );
+            if ($response->getStatusCode() == 200) {
+                $body = $response->getBody();
+                $json = json_decode($body->getContents());
+                $subscription = new Subscription();
+                $subscription->fill(
+                    $subscription->filterJson(
+                        $subscription->getFillable(),
+                        (array) $json
+                    )
+                );
 
-            return $subscription;
+                return $subscription;
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $json = $this->getJson($response);
+
+            throw new SubscriptionException(
+                sprintf(
+                    '%s threw an exception - %s check %s',
+                    ucfirst(__FUNCTION__),
+                    $json->message,
+                    $this->errorsToString($json)
+                ),
+                $response->getStatusCode(),
+                null
+            );
         }
-        throw new \Exception(
-            sprintf(
-                'GET request to subscriptions from [%s] returned [%s]',
-                get_class($this),
-                $response->getStatusCode()
-            )
-        );
     }
     /**
      * Updates an existing subscription
@@ -173,8 +188,15 @@ class SubscriptionService extends QuickPayService
             );
         }
     }
-
-    public function authorize(array $order_data, $subscription_id)
+    /**
+     * Authorizes an existing subscription
+     *
+     * @param array $order_data
+     * @param number $subscription_id
+     * @return bool
+     * @throws SubscriptionException
+     */
+    public function authorize(array $order_data, $subscription_id): bool
     {
         try {
             $request_data = array_merge(
@@ -185,15 +207,21 @@ class SubscriptionService extends QuickPayService
                 "subscriptions/$subscription_id/authorize",
                 $request_data
             );
-            if ($response->getStatusCode() == 202) {
-                $body = $response->getBody();
-                $json = $body->getContents();
-                // TODO: Change to Subscription
-                return $json;
-            }
+
+            return $response->getStatusCode() == 202 ? true : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            return new \Exception(
-                sprintf('Call to authorize() failed! [%s]', $e->getMessage())
+            $response = $e->getResponse();
+            $json = $this->getJson($response);
+
+            throw new SubscriptionException(
+                sprintf(
+                    '%s threw an exception - %s check %s',
+                    ucfirst(__FUNCTION__),
+                    $json->message,
+                    $this->errorsToString($json)
+                ),
+                $response->getStatusCode(),
+                null
             );
         }
     }
