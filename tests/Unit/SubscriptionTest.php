@@ -143,7 +143,7 @@ class SubscriptionTest extends TestCase
         $service->recurring(
             [
                 'amount' => 2000,
-                'order_id' => Str::random(10)
+                'order_id' => Str::random(10),
             ],
             $subscription->id
         );

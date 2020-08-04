@@ -40,7 +40,8 @@ class SubscriptionService extends QuickPayService
         ],
         'recurring' => [
             'id:integer' => 'Subscription id',
-            'order_id:string' => 'Unique order id(must be between 4-20 characters)',
+            'order_id:string' =>
+                'Unique order id(must be between 4-20 characters)',
         ],
     ];
     /**
@@ -368,13 +369,17 @@ class SubscriptionService extends QuickPayService
      */
     public function recurring(array $form_params, $subscription_id): void
     {
-        $this->validateParams(self::$required_data_types[__FUNCTION__],
+        $this->validateParams(
+            self::$required_data_types[__FUNCTION__],
             array_merge(['id' => $subscription_id], $form_params)
         );
 
-        $request_data = array_merge([
-            'form_params' => $form_params
-        ], $this->withHeaders());
+        $request_data = array_merge(
+            [
+                'form_params' => $form_params,
+            ],
+            $this->withHeaders()
+        );
 
         try {
             $response = $this->client->post(
