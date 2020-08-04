@@ -4,6 +4,7 @@ namespace QuickPay\Tests\Unit;
 
 use QuickPay\Tests\TestCase;
 use QuickPay\Subscription\SubscriptionService;
+use Illuminate\Support\Str;
 
 class SubscriptionTest extends TestCase
 {
@@ -14,7 +15,7 @@ class SubscriptionTest extends TestCase
         parent::setUp();
 
         $this->fake_data = [
-            'order_id' => substr(md5(microtime()), rand(0, 26), 10),
+            'order_id' => Str::random(10),
             'currency' => 'DKK',
             'description' => 'Your Hello Kitty Subscription',
         ];
@@ -119,5 +120,36 @@ class SubscriptionTest extends TestCase
         $cancel = $service->cancel($subscription->id);
 
         $this->assertTrue($cancel);
+    }
+
+    public function test_recurring()
+    {
+        $service = new SubscriptionService();
+        $subscription = $service->create($this->fake_data);
+
+        $service->authorize(
+            [
+                'amount' => 2000,
+                'acquirer' => 'clearhaus',
+                'card' => [
+                    'number' => '1000000000000008',
+                    'expiration' => '2203',
+                    'cvd' => '666',
+                ],
+            ],
+            $subscription->id
+        );
+
+        $service->recurring(
+            [
+                'amount' => 2000,
+                'order_id' => Str::random(10)
+            ],
+            $subscription->id
+        );
+
+        $subscription = $service->get($subscription->id);
+
+        $this->assertTrue($subscription->accepted);
     }
 }

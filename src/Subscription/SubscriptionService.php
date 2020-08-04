@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use QuickPay\Subscription\Subscription;
-use QuickPay\Subscription\Exception\SubscriptionException;
+use QuickPay\Subscription\SubscriptionException;
 use QuickPay\QuickPayService;
 
 class SubscriptionService extends QuickPayService
@@ -37,6 +37,10 @@ class SubscriptionService extends QuickPayService
         ],
         'cancel' => [
             'id:integer' => 'Subscription id',
+        ],
+        'recurring' => [
+            'id:integer' => 'Subscription id',
+            'order_id:string' => 'Unique order id(must be between 4-20 characters)',
         ],
     ];
     /**
@@ -339,6 +343,44 @@ class SubscriptionService extends QuickPayService
             if ($response->getStatusCode() == 202) {
                 return true;
             }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $json = $this->getJson($response);
+
+            throw new SubscriptionException(
+                sprintf(
+                    '%s threw an exception - %s check %s',
+                    ucfirst(__FUNCTION__),
+                    $json->message,
+                    $this->errorsToString($json)
+                ),
+                $response->getStatusCode(),
+                null
+            );
+        }
+    }
+    /**
+     * Creates a recurring payment
+     *
+     * @param array $form_params
+     * @return void
+     * @throws SubscriptionException
+     */
+    public function recurring(array $form_params, $subscription_id): void
+    {
+        $this->validateParams(self::$required_data_types[__FUNCTION__],
+            array_merge(['id' => $subscription_id], $form_params)
+        );
+
+        $request_data = array_merge([
+            'form_params' => $form_params
+        ], $this->withHeaders());
+
+        try {
+            $response = $this->client->post(
+                "subscriptions/$subscription_id/recurring",
+                $request_data
+            );
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
             $json = $this->getJson($response);
