@@ -83,7 +83,7 @@ class SubscriptionTest extends TestCase
         $this->assertTrue($subscription);
     }
 
-    public function test_get_paymentlinkurl()
+    public function test_paymentlinkurl()
     {
         $service = new SubscriptionService();
         $url = $service->getPaymentLinkUrl(
@@ -96,12 +96,28 @@ class SubscriptionTest extends TestCase
         $this->assertIsString($url);
     }
 
-    public function test_cancel_subscription_wrong_state()
+    public function test_cancel()
     {
         $service = new SubscriptionService();
-        $subscription = $service->getAll()->first();
+        $sub = $service->create($this->fake_data);
+
+        $service->authorize(
+            [
+                'amount' => 2000,
+                'acquirer' => 'clearhaus',
+                'card' => [
+                    'number' => '1000000000000008',
+                    'expiration' => '2203',
+                    'cvd' => '666',
+                ],
+            ],
+            $sub->id
+        );
+
+        $subscription = $service->get($sub->id);
+
         $cancel = $service->cancel($subscription->id);
 
-        $this->assertEquals(400, $cancel->getCode());
+        $this->assertTrue($cancel);
     }
 }

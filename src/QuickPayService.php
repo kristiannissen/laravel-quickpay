@@ -15,7 +15,7 @@ abstract class QuickPayService
         $this->client = $this->getClient();
     }
 
-    public function validateParams(array $rules, array $data_types)
+    public function validateParams(array $rules = [], array $data_types = [])
     {
         $rule_keys = array_keys($rules);
         $data_keys = array_keys($data_types);
@@ -23,10 +23,15 @@ abstract class QuickPayService
             list($name, $type) = explode(':', $rule_key);
             if (in_array($name, $data_keys) == false) {
                 throw new \InvalidArgumentException(
+                    sprintf('The parameter %s is missing!', $rules[$rule_key])
+                );
+            } elseif (gettype($data_types[$name]) !== $type) {
+                throw new \UnexpectedValueException(
                     sprintf(
-                        'The parameter %s is missing! The type is: %s',
-                        $rules[$rule_key],
-                        $type
+                        'The parameter %s should be of type %s but %s received!',
+                        strtoupper($name),
+                        strtoupper($type),
+                        strtoupper(gettype($data_types[$name]))
                     )
                 );
             }

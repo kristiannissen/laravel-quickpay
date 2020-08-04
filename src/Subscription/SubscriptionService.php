@@ -14,16 +14,29 @@ use QuickPay\QuickPayService;
 
 class SubscriptionService extends QuickPayService
 {
-    public static $required_data_types = [
+    private static $required_data_types = [
         'create' => [
             'order_id:string' =>
                 'Unique order id(must be between 4-20 characters)',
             'currency:string' => 'Currency eg DKK',
             'description:string' => 'Subscription description',
         ],
+        'get' => [
+            'id:integer' => 'Subscription id',
+        ],
         'authorize' => [
             'id:integer' => 'Subscription id',
-            'amount:number' => 'Amount',
+            'amount:integer' => 'Amount',
+        ],
+        'update' => [
+            'id:integer' => 'Subscription id',
+        ],
+        'getPaymentLinkUrl' => [
+            'id:integer' => 'Subscription id',
+            'amount:integer' => 'Amount to authorize',
+        ],
+        'cancel' => [
+            'id:integer' => 'Subscription id',
         ],
     ];
     /**
@@ -75,14 +88,19 @@ class SubscriptionService extends QuickPayService
     /**
      * Creates a new subscription
      *
-     * @param array $order_data, order_id, currency, description are required
+     * @param array $form_params
      * @return model Subscription
      * @throws SubscriptionException
      */
-    public function create(array $order_data): Model
+    public function create(array $form_params): Model
     {
+        $this->validateParams(
+            self::$required_data_types[__FUNCTION__],
+            $form_params
+        );
+
         $request_data = array_merge(
-            ['form_params' => $order_data],
+            ['form_params' => $form_params],
             $this->withHeaders()
         );
 
@@ -120,15 +138,19 @@ class SubscriptionService extends QuickPayService
     /**
      * Get a single subscription
      *
-     * @param number $id
+     * @param number $subscription_id
      * @return model Subscription
      * @throws SubscriptionException
      */
-    public function get($id): Model
+    public function get($subscription_id): Model
     {
+        $this->validateParams(self::$required_data_types[__FUNCTION__], [
+            'id' => $subscription_id,
+        ]);
+
         try {
             $response = $this->client->get(
-                "subscriptions/$id",
+                "subscriptions/$subscription_id",
                 $this->withHeaders()
             );
             if ($response->getStatusCode() == 200) {
@@ -170,6 +192,11 @@ class SubscriptionService extends QuickPayService
      */
     public function update(array $form_params = [], $subscription_id): Model
     {
+        $this->validateParams(
+            self::$required_data_types[__FUNCTION__],
+            array_merge(['id' => $subscription_id], $form_params)
+        );
+
         $request_data = array_merge(
             ['form_params' => $form_params],
             $this->withHeaders()
@@ -201,23 +228,23 @@ class SubscriptionService extends QuickPayService
         }
     }
     /**
-     * Authorizes an existing subscription
+     * Authorize an existing subscription
      *
-     * @param array $order_data
+     * @param array $form_params
      * @param number $subscription_id
      * @return bool
      * @throws SubscriptionException
      */
-    public function authorize(array $order_data, $subscription_id): bool
+    public function authorize(array $form_params, $subscription_id): bool
     {
         $this->validateParams(
             self::$required_data_types[__FUNCTION__],
-            array_merge(['id' => $subscription_id], $order_data)
+            array_merge(['id' => $subscription_id], $form_params)
         );
 
         try {
             $request_data = array_merge(
-                ['form_params' => $order_data],
+                ['form_params' => $form_params],
                 $this->withHeaders()
             );
             $response = $this->client->post(
@@ -242,29 +269,68 @@ class SubscriptionService extends QuickPayService
             );
         }
     }
-
-    public function getPaymentLinkUrl(array $form_data, $subscription_id)
+    /**
+     * Generate a payment window with a card form
+     *
+     * @param array $form_params
+     * @param number $subscription_id
+     * @return string
+     * @throws SubscriptionException
+     */
+    public function getPaymentLinkUrl(array $form_params, $subscription_id)
     {
+        $this->validateParams(
+            self::$required_data_types[__FUNCTION__],
+            array_merge(['id' => $subscription_id], $form_params)
+        );
+
         $request_data = array_merge(
-            ['form_params' => $form_data],
+            ['form_params' => $form_params],
             $this->withHeaders()
         );
-        $response = $this->client->put(
-            "subscriptions/$subscription_id/link",
-            $request_data
-        );
-        if ($response->getStatusCode() == 200) {
-            $body = $response->getBody();
-            $json = (array) json_decode($body->getContents());
 
-            return $json['url'];
+        try {
+            $response = $this->client->put(
+                "subscriptions/$subscription_id/link",
+                $request_data
+            );
+            if ($response->getStatusCode() == 200) {
+                $body = $response->getBody();
+                $json = (array) json_decode($body->getContents());
+
+                return $json['url'];
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $json = $this->getJson($response);
+
+            throw new SubscriptionException(
+                sprintf(
+                    '%s threw an exception - %s check %s',
+                    ucfirst(__FUNCTION__),
+                    $json->message,
+                    $this->errorsToString($json)
+                ),
+                $response->getStatusCode(),
+                null
+            );
         }
-        throws\Exception('Problem wiht link');
     }
-
-    public function cancel($subscription_id)
+    /**
+     * Cancels a subscription
+     *
+     * @param number $subscription_id
+     * @return bool
+     * @throws SubscriptionException
+     */
+    public function cancel($subscription_id): bool
     {
+        $this->validateParams(self::$required_data_types[__FUNCTION__], [
+            'id' => $subscription_id,
+        ]);
+
         $request_data = array_merge([], $this->withHeaders());
+
         try {
             $response = $this->client->post(
                 "subscriptions/$subscription_id/cancel",
@@ -275,13 +341,17 @@ class SubscriptionService extends QuickPayService
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
-            $body = $response->getBody();
-            $json = json_decode($body);
+            $json = $this->getJson($response);
 
-            return new SubscriptionException(
-                $json->message,
+            throw new SubscriptionException(
+                sprintf(
+                    '%s threw an exception - %s check %s',
+                    ucfirst(__FUNCTION__),
+                    $json->message,
+                    $this->errorsToString($json)
+                ),
                 $response->getStatusCode(),
-                $e
+                null
             );
         }
     }
