@@ -64,9 +64,8 @@ class SubscriptionService extends QuickPayService
         try {
             $response = $this->client->get('subscriptions', $request_data);
             if ($response->getStatusCode() == 200) {
-                $body = $response->getBody();
                 $subscriptions = [];
-                $json_resp = json_decode($body->getContents());
+                $json_resp = $this->getJson($response);
 
                 foreach ($json_resp as $sub) {
                     $subscription = new Subscription((array) $sub);
@@ -113,8 +112,7 @@ class SubscriptionService extends QuickPayService
         try {
             $response = $this->client->post('subscriptions', $request_data);
             if ($response->getStatusCode() == 201) {
-                $body = $response->getBody();
-                $json_array = (array) json_decode($body->getContents());
+                $json_array = (array) $this->getJson($response);
                 $subscription = new Subscription();
                 $subscription->fill(
                     $subscription->filterJson(
@@ -162,8 +160,7 @@ class SubscriptionService extends QuickPayService
                 $this->withHeaders()
             );
             if ($response->getStatusCode() == 200) {
-                $body = $response->getBody();
-                $json = json_decode($body->getContents());
+                $json = $this->getJson($response);
                 $subscription = new Subscription();
                 $subscription->fill(
                     $subscription->filterJson(
@@ -307,12 +304,11 @@ class SubscriptionService extends QuickPayService
                 $request_data
             );
             if ($response->getStatusCode() == 200) {
-                $body = $response->getBody();
-                $json = (array) json_decode($body->getContents());
+                $json = $this->getJson($response);
                 $subscription = $this->get($subscription_id);
                 event(new SubscriptionEvent($subscription));
 
-                return $json['url'];
+                return $json->url;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();

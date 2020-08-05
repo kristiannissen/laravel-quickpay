@@ -35,7 +35,7 @@ class SubscriptionTest extends TestCase
 
         $this->assertFalse(is_null($subscription->id));
 
-        $this->markTestSkipped('Creates too many entries');
+        // $this->markTestSkipped('Creates too many entries');
     }
 
     public function test_get_subscription()
