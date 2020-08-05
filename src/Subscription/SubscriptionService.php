@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use QuickPay\Subscription\Subscription;
 use QuickPay\Subscription\SubscriptionException;
 use QuickPay\QuickPayService;
+use QuickPay\Events\SubscriptionEvent;
 
 class SubscriptionService extends QuickPayService
 {
@@ -121,8 +122,10 @@ class SubscriptionService extends QuickPayService
                         $json_array
                     )
                 );
+                $subscription = new Subscription($json_array);
+                event(new SubscriptionEvent($subscription));
 
-                return new Subscription($json_array);
+                return $subscription;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
@@ -168,6 +171,7 @@ class SubscriptionService extends QuickPayService
                         (array) $json
                     )
                 );
+                event(new SubscriptionEvent($subscription));
 
                 return $subscription;
             }
@@ -213,6 +217,7 @@ class SubscriptionService extends QuickPayService
             );
             if ($response->getStatusCode() == 200) {
                 $subscription = $this->get($subscription_id);
+                event(new SubscriptionEvent($subscription));
 
                 return $subscription;
             }
@@ -256,6 +261,8 @@ class SubscriptionService extends QuickPayService
                 "subscriptions/$subscription_id/authorize",
                 $request_data
             );
+            $subscription = $this->get($subscription_id);
+            event(new SubscriptionEvent($subscription));
 
             return $response->getStatusCode() == 202 ? true : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
@@ -302,6 +309,8 @@ class SubscriptionService extends QuickPayService
             if ($response->getStatusCode() == 200) {
                 $body = $response->getBody();
                 $json = (array) json_decode($body->getContents());
+                $subscription = $this->get($subscription_id);
+                event(new SubscriptionEvent($subscription));
 
                 return $json['url'];
             }
@@ -342,6 +351,9 @@ class SubscriptionService extends QuickPayService
                 $request_data
             );
             if ($response->getStatusCode() == 202) {
+                $subscription = $this->get($subscription_id);
+                event(new SubscriptionEvent($subscription));
+
                 return true;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
@@ -386,6 +398,8 @@ class SubscriptionService extends QuickPayService
                 "subscriptions/$subscription_id/recurring",
                 $request_data
             );
+            $subscription = $this->get($subscription_id);
+            event(new SubscriptionEvent($subscription));
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
             $json = $this->getJson($response);
