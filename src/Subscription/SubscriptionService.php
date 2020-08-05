@@ -54,6 +54,8 @@ class SubscriptionService extends QuickPayService
      */
     public function getAll(array $query_params = []): Collection
     {
+        // Here we merge the query parameters with the prepared
+        // headers before they are passed to the client
         $request_data = array_merge(
             [
                 'query' => $query_params,
@@ -62,22 +64,28 @@ class SubscriptionService extends QuickPayService
         );
 
         try {
+            // Make the GET request to the endpoint
             $response = $this->client->get('subscriptions', $request_data);
+            // Unless the status code equals 200 do we do anything
             if ($response->getStatusCode() == 200) {
                 $subscriptions = [];
+                // Get the JSON data from the response object
                 $json_resp = $this->getJson($response);
-
+                // Iterate over all JSON objects, populate the model
+                // and push it onto the array
                 foreach ($json_resp as $sub) {
                     $subscription = new Subscription((array) $sub);
                     array_push($subscriptions, $subscription);
                 }
-
+                // Turn the array into a Laravel Collection and return it
                 return collect($subscriptions);
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
+            // Get the request response object from the exception
             $response = $e->getResponse();
+            // Get the JSON data from the response
             $json = $this->getJson($response);
-
+            // Build the exception to throw
             throw new SubscriptionException(
                 sprintf(
                     '%s threw an exception - %s check %s',
@@ -242,7 +250,7 @@ class SubscriptionService extends QuickPayService
      * @return bool
      * @throws SubscriptionException
      */
-    public function authorize(array $form_params, $subscription_id): bool
+    public function authorize(array $form_params, $subscription_id): void
     {
         $this->validateParams(
             self::$required_data_types[__FUNCTION__],
@@ -258,10 +266,10 @@ class SubscriptionService extends QuickPayService
                 "subscriptions/$subscription_id/authorize",
                 $request_data
             );
-            $subscription = $this->get($subscription_id);
-            event(new SubscriptionEvent($subscription));
-
-            return $response->getStatusCode() == 202 ? true : false;
+            if ($response->getStatusCode() == 202) {
+                $subscription = $this->get($subscription_id);
+                event(new SubscriptionEvent($subscription));
+            }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
             $json = $this->getJson($response);
@@ -333,7 +341,7 @@ class SubscriptionService extends QuickPayService
      * @return bool
      * @throws SubscriptionException
      */
-    public function cancel($subscription_id): bool
+    public function cancel($subscription_id): void
     {
         $this->validateParams(self::$required_data_types[__FUNCTION__], [
             'id' => $subscription_id,
@@ -349,8 +357,6 @@ class SubscriptionService extends QuickPayService
             if ($response->getStatusCode() == 202) {
                 $subscription = $this->get($subscription_id);
                 event(new SubscriptionEvent($subscription));
-
-                return true;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();

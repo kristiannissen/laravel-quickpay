@@ -68,7 +68,7 @@ class SubscriptionTest extends TestCase
         $service = new SubscriptionService();
         $sub = $service->create($this->fake_data);
 
-        $subscription = $service->authorize(
+        $service->authorize(
             [
                 'amount' => 2000,
                 'acquirer' => 'clearhaus',
@@ -80,8 +80,9 @@ class SubscriptionTest extends TestCase
             ],
             $sub->id
         );
+        $subscription = $service->get($sub->id);
 
-        $this->assertTrue($subscription);
+        $this->assertTrue($subscription->state == 'active');
     }
 
     public function test_paymentlinkurl()
@@ -117,9 +118,11 @@ class SubscriptionTest extends TestCase
 
         $subscription = $service->get($sub->id);
 
-        $cancel = $service->cancel($subscription->id);
+        $service->cancel($subscription->id);
 
-        $this->assertTrue($cancel);
+        $canceled = $service->get($subscription->id);
+
+        $this->assertTrue($canceled->state === 'cancelled');
     }
 
     public function test_recurring()
