@@ -148,7 +148,7 @@ class PaymentService extends QuickPayService
             if ($response->getStatusCode() == 202) {
                 $json = $this->getJson($response);
                 $payment = new Payment((array) $json);
-                PaymentEvent::dispatch($payment);
+                event(new PaymentEvent($payment));
                 return $payment;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
@@ -186,7 +186,7 @@ class PaymentService extends QuickPayService
             if ($response->getStatusCode() == 202) {
                 $json = $this->getJson($response);
                 $payment = new Payment((array) $json);
-                PaymentEvent::dispatch($payment);
+                event(new PaymentEvent($payment));
                 return $payment;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
@@ -222,7 +222,7 @@ class PaymentService extends QuickPayService
             if ($response->getStatusCode() == 202) {
                 $json = $this->getJson($response);
                 $payment = new Payment((array) $json);
-                PaymentEvent::dispatch($payment);
+                event(new PaymentEvent($payment));
                 return $payment;
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
