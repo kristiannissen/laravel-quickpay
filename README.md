@@ -16,3 +16,14 @@ Implementeringen dækker primært følgende QuickPay services
 
 ## Eksempler
 
+I det følgende kan du se eksempler på hvordan denne pakke kan anvendes.
+
+### Oprettelse af payment
+```
+$service = new PaymentService();
+$payment = $service->create([
+            'order_id' => Str::random(10),
+            'currency' => 'DKK',
+        ]);
+```
+Payment->Create returnerer et Object som ...
