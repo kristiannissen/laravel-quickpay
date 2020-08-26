@@ -6,7 +6,7 @@
 namespace QuickPay\Payment;
 
 use QuickPay\QuickPayService;
-use QuickPay\Payment\Exception\PaymentException;
+use QuickPay\Payment\PaymentException;
 use QuickPay\Payment\Payment;
 use QuickPay\Events\PaymentEvent;
 use Illuminate\Support\Collection;
